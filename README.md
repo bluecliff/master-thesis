@@ -1,5 +1,16 @@
-xdba-these 西安电子科技大学本科生毕业设计论文LaTeX宏包
-====
+硕士毕业论文tex文件
+====================
+
+编译方法
+---------
+xelatex 1203121619-utf8.tex
+bibtex 1203121619-utf8
+xelatex 1203121619-utf8.tex
+xelatex 1203121619-utf8.tex
+
+模板宏包说明
+---------------
+采用xdba-these 西安电子科技大学本科生毕业设计论文LaTeX宏包
 此宏包将在使用中持续更新，版本号一格式为0.X，等顺利通过学校审核后，将发布1.0版，为正式版。
 
 项目介绍
@@ -45,7 +56,4 @@ License 协议
 [xuejilong@gmail.com](mailto:xuejilong@gmail.com)
 
 西电开源社区
-
-
-
 
