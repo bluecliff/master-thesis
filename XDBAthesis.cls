@@ -73,6 +73,14 @@
 \RequirePackage[square,sort&compress,numbers,super]{natbib}
 %% for dashedUnderline
 \RequirePackage{ulem}
+%% algorithm
+\RequirePackage[算法]{algorithm}
+\RequirePackage[noend]{algpseudocode}
+\numberwithin{algorithm}{chapter}
+\renewcommand{\algorithmicrequire}{ \textbf{Input:}} %Use Input in the format of Algorithm
+\renewcommand{\algorithmicensure}{ \textbf{Output:}} %UseOutput in the format of Algorithm
+%%multirow
+\RequirePackage{multirow}
 %% packages and settings depend on PDF mode
 
 \ifpdf   % We're running pdfTeX in PDF mode

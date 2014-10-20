@@ -1,0 +1,130 @@
+\chapter{CSAA的实现}
+
+上文中给出了CSAA的算法过程，实际实现中CSAA采用了一些优化措施，进一步提高程序的效率。这些措施主要是从提高执行效率和准确度
+两个方面来考虑的。CSAA主要包括三个子程序:build index,alignment,output。build index子程序完成对参考序列$T$建立压缩后缀数组
+索引，对同一个参考序列只需建立一次索引即可。alignment子程序是CSAA的核心，完成对短读序列到参考序列$T$的映射，输出CSAA
+自定义的一种SAI格式文件。最终SAI格式文件通过output子程序转为标准比对结果文件SAM(Sequence Alignment/Map format)。
+
+\subsection{效率优化}
+在实际应用中，每一个短读一般有20到70个bp，若直接采用递归算法实现，递归深度过深会严重影响程序的执行效率。所以在
+CSAA中使用了一种改进的优先队列数据结构来替代递归，把递归转为迭代形式。
+
+优先队列的每一项保存一个近似匹配的序列，按照每个近似序列的质量得分排列。质量得分是对每一个近似序列的评分。初始评
+分是对应短读序列不做任何变换时的评分，定义为一个常数，由程序预先定义的最大失配数量，最大gap open数目，最大gap extension
+数目决定。这里参照序列比对领域的一些标准定义，对序列做一个替换称为一次失配，一次单独的插入或者删除称为一个gap open。若在
+已经gapopen的位置连续执行了一次删除或者插入操作，称为增加了一个gap extension。在CSAA中可以定义程序执行时的最大可允许的失配
+,gap open和gap extension数量，以保证近似序列和短读序列之间的近似程度在合理范围之内。CSAA同样的对理论上的罚分机制也做了一些修正，
+罚分不再针对替换，插入和删除操作，而是针对近似序列的失配,gap open,gap extension数量罚分。三种操作具有不同的罚分标准。可以
+在执行程序时输入，也可以使用默认的罚分标准。每一个短读序列的质量得分也由罚分后的得分决定。
+
+优先队列使用了最大堆来实现，这可以保证较高的效率，另一方面，也可以通过限制优先队列的容量来保证搜索空间在短序列时不会太大。通过
+优先队列，可以把算法\ref{alg:appro}描述的深度优先的搜索方向变为广度优先，加上优先队列的大小限制，可以较好的节省内存空间。保证
+在较低内存下依然可以运行。
+
+CSAA在实现时考虑到CSA查询后缀数组位置的速度较快，而由后缀数组位置查询实际的映射位置比较慢，同时因为在做近似匹配的过程也无需
+具体的映射位置，所以CSAA定义了一个SAI文件，该文件是CSAA的中间输出文件，所存内容为短读序列的近似匹配结果，包括每一个
+短读 序列的近似匹配后的后缀数组位置，质量得分,变换操作位置，类型等信息。最终通过CSAA的一个子程序结合参考序列$T$完成SAI
+文件到标准的比对文件SAM文件的输出。
+
+\subsection{使用seed提高精确度}
+在DNA测序技术中，单端测序和双端测序都存在测序质量的问题。离结合位点越近的位置，测序结果准确率越高，而越远的位置，测序准确率
+越低。根据这一现象，关于Bowtie实现的论文\cite{langmead2009ultrafast}中提出了seed的概念，针对短读序列中准确率较高的部分采用较
+高的限制。在算法\ref{alg:appro}中，定义当$z>0$时才停止搜索，在CSAA中实际上是分为两部分的，seed部分当$z>minDifference$时就会
+抛弃这个搜索方向。而在非seed部分，默认情况下$minDifferecnce=0$。同样的在在seed部分，失配,gap open和gap extension的数量
+限制也相较非seed部分较大。通过这样的策略，可以有效提高搜索的精度。至于seed的具体长度，可以根据不同的测序技术来给定。默认情况
+下，Bowtie的seed长度是28，随本文发布的CSAA中seed的默认长度是32。
+
+因为seed的限制条件较高，所以如果能首先对seed进行匹配，可以尽早抛弃掉一些不满足seed部分匹配要求但满足非seed部分匹配要求的序列。
+但因为seed是在短读序列的前缀部分，而我们使用CSA索引的后向搜索时是从后往前搜索的，最后才搜索seed部分。所以在CSAA中无论是建立
+索引还是，还是短读匹配都是对短读的reverse序列进行匹配的。这同BWA的做法一致。
+
+\section{实验测试}
+
+为测试CSAA的性能，本文同时测试了MAQ\cite{li2008mapping},Bowtie\cite{langmead2009ultrafast}和BWA\cite{li2009fast}这三个比对工
+具，和CSAA进行比较。分别对比这几个工具在不通规模数据上建立索引时的时间，需要的内存；以及在模拟数据上和真实数据上的比对能力。
+MAQ为所有的短读序列建立hash表，进而遍历整个参考序列来实现比对。Bowtie和BWA是用基于BWT的索引建立
+的比对工具，其中Bowtie采用了回溯法实现替换操作，但不支持inset和delete操作，即上文中所论述的gap alignment。BWA采用了本文类似的
+算法，但在建立索引时，采用了分段建立索引的方法，建立索引的速度比较慢，且需要保存参考序列$T$。
+
+\subsection{测试环境和数据}
+在对CSAA的测试中，使用gcc 4.6.3编译链接，并且使用了-O3优化。系统环境为ubuntu 12.04 amd64，运行在一台具有18G内存的工作站上。
+测试使用的数据是标准的人类基因组序列hg18.fa，来自1000 Genome Project的NCBI build 36，模拟数据也是在该数据上生成。所有测试数
+据均使用默认选项运行。
+
+\subsection{索引建立时间}
+表\ref{tab:tab1}中对比了bowtie,BWA和CSAA三种工具分别建立索引时所需要的时间和内存消耗对比情况，表中数据分别对应几个工具在索引
+512M,1024M和2048M的数据时所需要的时间和内存。
+
+\begin{table}[htbp]
+    \caption{建立索引的时间空间对比}
+    \label{tab:tab1}
+    \centering
+    \begin{tabular}{lrrrrrr}
+        \hline
+        \multirow{2}{*}{Program} & \multicolumn{3}{c}{Time(s)} & \multicolumn{3}{c}{Memory(M)}\\
+        \cline{2-4}
+        \cline{5-7}
+        & 512M &1024M &2048M &512M &1024M &2048M\\
+        \hline
+        Bowtie&1311 &2720 &5581 &987 &1109 &1210 \\
+        BWA&531 &1101 &2445 &1890 &1902 &2006 \\
+        CSAA&413 &843 &2065 &2483 &5325 &11435 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+从表\ref{tab:tab1}中的测试结果可以看到，CSAA相对其他两个不对工具在索引时间上具有较大优势，这是由于BWA和Bowtie都同时给inverted
+reference建立了索引，用时会较长。其中Bowtie建立索引时是分块建立索引的，最终再合并成一个索引，时间效率最差，但需用内存空间最小。
+
+\subsection{模拟数据测试}
+本文使用SAMtools工具包中的wgsim工具从人类基因组序列中随机生成模拟的短读序列。然后，分别用四种比对工具对这些模拟的short
+短读s序列进行比对，然后对比结果。因为这些模拟数据在参考序列上的映射位置是已知的，所以就可以计算出各个工具的比对结果的精确率。
+
+表\ref{tab:tab2}所示为四个测试工具的比对结果展示，参考序列是人类基因组序列，模拟短读序列的长度为70bp，总共有1000000个
+短读，所有序列均为single end序列。
+\begin{table}[htbp]
+    \caption{模拟数据比对测试}
+    \label{tab:tab2}
+    \centering
+    \begin{tabular}{lrrrr}
+       \hline \\
+       Program&Time(s)&Memory(M)&Conf(\%)&Err(\%)\\
+       \hline \\
+       Bowtie&1701&2911&86.3&0.2\\
+       BWA&1519&3116&90.7&0.12\\
+       CSAA&2241&2905&89.9&0.13\\
+       \hline
+    \end{tabular}
+\end{table}
+
+表\ref{tab:tab2}中的实验的模拟数据使用wsgi程序在人类基因组上生成的长为70bp，生成过程中，单核苷酸变异(SNP)的概率是0.09\%，
+indel变异的概率是0.01\%，indel的长度是满足正太分布$N(500,50)$。
+对比结果中conf是有确定的比对结果的短读的比率，指的是所有短读中比对程序可以比对到映射位置的短读所占比例。
+而Err错误率是指在所有的有确定映射位置的短读中的比对位置错误的短读的比率。从中可以看出，在长为70bp的100万个短读的映射中，CSAA相
+对于BWA和Bowtie在查询时更节省内存，在确定率和错误率上和BWA持平，优于Bowtie。出现这样的结果是因为BWA和CSAA都支持indel操作，而
+Bowtie则只支持substitution操作，当短读序列比较长时其比对效果就会下降。
+
+\subsection{真实数据测试}
+为测试CSAA在真实数据上的表现，本文从网络上下载了12.2 million个长为51bp的短读数据。这些数据来自European Read Archive(AC:ERR000589)
+，是1000 Genomes Project的一个名男性基因组测序，由Illumina测序技术完成测序。参考序列选的是人类基因组，测序编号NCBI build 36。
+
+\begin{table}[htbp]
+    \caption{实际数据比对测试}
+    \label{tab:tab3}
+    \centering
+    \begin{tabular}{lrrr}
+       \hline \\
+       Program&Time(m)&Memory(M)&Conf(\%)\\
+       \hline \\
+       Bowtie&303&3122&84.6\\
+       BWA&221&3887&88.4\\
+       CSAA&409&3313&86.5\\
+       \hline
+    \end{tabular}
+\end{table}
+
+表\ref{tab:tab3}中的测试结果显示，在实际数据中CSAA也具有较高的准确性，86\%的短读序列都能映射到参考序列上，
+基本性能和BWA接近，相对BWA使用更少的内存空间。
+
+
+
