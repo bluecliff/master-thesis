@@ -426,8 +426,8 @@ $SA[\alpha(P[0])]+1,SA[\alpha(P[0])+1]+1,\cdots ,SA[\alpha(P[0])+\beta(P[0])-1]+
         \Function{backwardSearch}{$P,\Phi,\alpha,\beta$}
         \State $l_{m} \gets 0;r_{m}\gets n-1$
         \For {$i\gets m-1$ down to $0$}
-            \State $l_i \gets min\{ k \in [\alpha(P[i]),\alpha(P[i])+\beta(P[i])-1],\Phi[k] \in [l_{i+1},r_{i+1}]\}$
-            \State $r_i \gets max\{ k \in [\alpha(P[i]),\alpha(P[i])+\beta(P[i])-1],\Phi[k] \in [l_{i+1},r_{i+1}]\}$
+            \State $l_i \gets \min\{ k \in [\alpha(P[i]),\alpha(P[i])+\beta(P[i])-1],\Phi[k] \in [l_{i+1},r_{i+1}]\}$
+            \State $r_i \gets \max\{ k \in [\alpha(P[i]),\alpha(P[i])+\beta(P[i])-1],\Phi[k] \in [l_{i+1},r_{i+1}]\}$
             \If{$l> r$}
                 \State \Return $\varnothing$
             \EndIf
