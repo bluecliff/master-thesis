@@ -254,19 +254,21 @@ read2相匹配的。按照前文所述的双端测序方法可知，read1和read
 \section{CSAA对比实验测试}
 
 为测试CSAA的性能，本文同时测试了Bowtie\cite{langmead2009ultrafast}和BWA\cite{li2009fast}这两个个比对工
-具，和CSAA进行比较。分别对比这几个工具在不同规模数据上建立索引时的时间，需要的内存；以及在模拟数据上和真实数据上的比对能力。
-MAQ为所有的短读序列建立hash表，进而遍历整个参考序列来实现比对。Bowtie和BWA是用基于BWT的索引建立
+具的性能，以和CSAA进行比较。分别对比这几个工具在不同规模数据上建立索引时的时间，需要的内存；以及在模拟数据上和真实数据上的比对能力。
+这三个工具中，Bowtie和BWA是用基于BWT的索引建立
 的比对工具，其中Bowtie采用了回溯法实现替换操作，但不支持insert和delete操作，即上文中所论述的gap alignment。BWA除了支持insert，
-delete之外，还加入了smith-water方法提高比对精度。比对测试中，我们的csaa和bwa,bowtie等都只使用单线程运行。
+delete之外，还加入了smith-water方法提高比对精度。此外Bowtie和BWA和我们的CSAA都支持多线程比对，但在比对测试中，我们的csaa和bwa,
+bowtie等都只使用单线程运行。
 
 \subsection{测试环境和数据}
 
-在对CSAA的对比测试中，我们使用gcc 4.6.3编译链接，并且使用了-O3优化。系统环境为ubuntu 12.04 amd64，运行在一台具有18G内存的工
+在对CSAA的对比测试中，我们使用gcc 4.8编译链接CSAA，并且使用了-O3优化。系统环境为ubuntu 12.04 amd64，运行在一台具有18G内存和双
+核intel Xeon(R) CPU的工
 作站上。测试使用的数据是标准的人类基因组序列，ucsc version为hg19，来自1000 Genome Project的名为Genome Reference Consortium GRCh37
 的参考序列。实验中所用的模拟数据也是在该数据上生成。
 
 测试中，CSAA和BWA在测试时均指定单线程，seed长为32。Bowtie使用的是Bowtie-v1，使用单线程，且不使用-best参数，即Bowtie使用DFS搜索。
-Bowtie使用默认的长为31的seed。模拟数据的获取和比对精度结果获得中使用了SAMtools系列工具。
+Bowtie使用默认的长为31的seed。模拟数据的获取和比对精度结果获得中使用了SAMtools系列工具中的wgsim和wgsim-eval。
 
 \subsection{索引建立时间}
 表\ref{tab:tab1}中对比了bowtie,BWA和CSAA三种工具分别建立索引时所需要的时间和内存消耗对比情况，表中数据分别对应几个工具在索引
