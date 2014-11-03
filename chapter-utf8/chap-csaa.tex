@@ -77,6 +77,34 @@ $\Phi$数组，首先$T'$的后缀数组是很容易从$T$的后缀数组获取�
 于传统的构建方法，但运行时内存需求要小的多，特别是在构建像人类基因组(2.8GB)这样的大规模文本序列的索引时，有很大的优势。我们
 可以在传统PC机上完成构建，无需大内存的工作站，可以节省很多成本。
 
+表\ref{tab:index}给出了传统基于后缀数组构建压缩后缀数组的方法和增量式构造压缩后缀数组方法二者在构造时间，内存空间占用上的对
+比。可以看到增量式构造法明显对内存的需求低了很多，可以在一般PC机器上完成较大规模的基因组的索引构建，对应的构造时间也大了很多。
+整体而言，增量构造法的时间和空间占用和输入序列的大小成线性增长，而经典构造方法需要更多的内存，所以在输入序列较大时，因为占用
+的虚存也随之增大，导致时间效率下降，但总体而言经典构造法仍然比增量构造法要快的多。综上所述，在序列比较小时，我们应当使用经典
+构造法，在序列较大导致内存不足时应当使用增量构造法。实验中所使用数据为来自NCBL的hg19.fa，不同长度的序列由此序列截取，测试环境
+是拥有14G内存，4核CPU的工作站。
+
+\begin{table}
+    \caption{压缩后缀数组构造算法的时间空间效率对比}
+    \label{tab:index}
+    \centering
+    \begin{tabular}{lrrrr}
+        \toprule
+        \multirow{2}{*}{序列大小}&\multicolumn{2}{c}{经典构造方法}&\multicolumn{2}{c}{增量构造方法}\\
+        \cline{2-3}
+        \cline{4-5}
+        &CPU times(s) & \tabincell{l}{peak working\\memory(MB)}&CPU times(s)& \tabincell{l}{peak working \\memory(MB)}\\
+        \midrule
+        128MB& 84 & 899.6 & 242 & 189.5\\
+        256MB& 180 & 1867.8 & 515 & 377.9\\
+        512MB& 376 & 2113.6 & 1103 & 755.1\\
+        1024MB& 840 & 8680.1 & 2408 & 1510.3\\
+        2048MB& 1792 & 19532.5 & 5336 & 3020.5\\
+        3051MB& - & - & 9004 & 5974\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
 
 \section{比对过程并行化}
 CSAA给参考序列建立索引需要很多时间，但我们只需要给一个参考序列建一次索引就可以了，其后的向同一参考序列的比对无需再建立一次
@@ -111,12 +139,24 @@ csaa在执行比对时，可以指定线程的数量，程序启动后，将建�
     \end{algorithmic}
 \end{algorithm}
 
+通过增加比对时的线程数量可以快速减少比对的时间，如图\ref{fig:alignment}所示。实验中所用的参考序列为来自NCBI的人类基因组
+hg19.fa，短读序列是用wgsim仿真程序生成的模拟短读数据，短读长分别为35bp,70bp,125bp，0.09\%的SNP出现几率，0.01\%的indel出现几率，
+短读数量为100万个。可以看到，当由单线程变为双线程时，比对时间减少了一倍，这显示CSAA的多线程能明显提高比对的速度。之后再提高
+线程数不能再提高比对速度是因为测试机器是双核的，再多的线程已经不能有效提高CSAA的比对速度。对应的，当进程数增多时，比对所需要
+的内存也随之增多。图\ref{fig:alignment}中的曲线还显示，比对的速度以及内存消耗和短读长是密切相关的，短读越长，比对的时间也
+越长，所需内存也越多。
 
-\section{使用seed提高比对精确度}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.1\textwidth]{alignment.pdf}
+    \caption{多进程比对的时间空间效率} \label{fig:alignment}
+\end{figure}
+
+\section{使用seed提高比对速度}
 在DNA测序技术中，单端测序和双端测序都存在测序质量的问题。离引物结合位点越近的位置，测序结果准确率越高，而越远的位置，测序准确率
-越低。根据这一现象，关于Bowtie实现的论文\cite{langmead2009ultrafast}中提出了seed的概念，概论文认为针对短读序列中测序可信度较高
-的部分采用较高的限制，在较低的地方做较低的限制可以取得更精确的比对结果。如图\ref{fig:seed}所示，read前面蓝色部分是可信度
-比较高的seed部分，后面是可信度比较低的非seed部分。
+越低。根据这一现象，关于Bowtie实现的论文\cite{langmead2009ultrafast}中提出了seed的概念，该论文认为针对短读序列中测序可信度较高
+的部分采用较高的限制，在较低的地方做较低的限制可以取得更快的比对速度和更好的比对结果。如图\ref{fig:seed}所示，read前面蓝色部分
+是可信度比较高的seed部分，后面是可信度比较低的非seed部分。
 
 \begin{figure}[htbp]
     \centering
@@ -129,16 +169,41 @@ csaa在执行比对时，可以指定线程的数量，程序启动后，将建�
 删除，插入等操作的绝大部分发生在非seed部分，即read的不可靠部分，从而有效提高比对的精度。至于seed的具体长度，可以根据不同的测序
 技术来给定。默认情况下，Bowtie的seed长度是28，随本文发布的CSAA中seed的默认长度是32。
 
-因为seed的限制条件较高，所以如果能首先对seed进行匹配，可以尽早抛弃掉一些不满足seed部分匹配要求，从而不用搜索非seed部分，降低空
-间。但因为seed是在短读序列的前缀部分，而我们使用CSA索引的后向搜索时是从后往前搜索的，最后才搜索seed部分。所以在CSAA中无论是建
+因为seed的限制条件较高，所以如果能首先对seed进行匹配，可以尽早抛弃掉一些不满足seed部分匹配要求，从而不用搜索非seed部分，从而
+提高搜索速度。但因为seed是在短读序列的前缀部分，而我们使用CSA索引的后向搜索时是从后往前搜索的，最后才搜索seed部分。所以在CSAA中无论是建
 立索引还是短读匹配都是对短读的逆序序列进行的。如图\ref{fig:seed}所示，通过逆序，把read的seed部分转到后向搜索的首先搜索的部分。
+
+在图\ref{fig:seedaccuracy}中，对seed的长度对比对速度和比对精度做了对比测试，测试中的数据同图\ref{fig:alignment}使用的模拟数据相同，
+都是100万条hg19上的仿真数据，indel概率为0.01\%，SNP概率为0.09\%，不同的是本次实验中只测试了长为70bp的短读。可以发现，seed的选
+取对比对速度有着明显的影响，seed选取的越长，比对的速度越快，几乎成线性下降的趋势。seed的长度对recall rate和accuracy同样有影响，
+seed选取的越长，recall rate有明显下降，这是因为如果seed越长，seed部分不匹配的可能越大，造成更多的短读不能匹配到参考序列上，而
+accuracy有所提高则是因为较长的seed选取，抛弃了更多的可能错误匹配，保证了更少的匹配错误。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1.1\textwidth]{seedaccuracy.pdf}
+    \caption{seed长度对比对速度和比对精度的影响} \label{fig:seedaccuracy}
+\end{figure}
+
+
+
+本文中，比对精度包括两个测量指标，一个是recall rate，一个是mapping accuracy。recall rate是正确比对的短读(correctly mapped reads)
+数占总的短读数(all reads)的比例，而mapping accuracy是正确比对的短读数(correctly mapped reads)占成功比对到参考序列上的短读(mapped reads)
+的比例。在序列比对中，对于实际测序实验中得到的短读数据，由于预先并不知道短读的真正位置，所以正确比对的短读(correctly mapped reads)
+数量是未知的。只有用模拟数据才能获取短读的真正位置，再用比对软件对模拟生成的短读进行比对，把获取的比对结果和预知的模拟短读的真正
+位置做比较就能度量该比对软件的正确比对短读数目，从而计算出mapping accuracy，来度量一个软件的比对的可信度。另一方面，因为比对软件
+在比对中设定的一些参数限制，如本文中的罚分，difference距离等等，使得一些发生了较大的变异(SNP,indels)的短读不能映射到参考序列上，
+即该短读没有映射位置，从而造成最终在所有短读中只有一部分得以映射到参考序列上，这就是mapped reads，而recall rate即反映了这一衡
+量短读比对性能的指标。在实际比对中，比对软件得到的参考序列上的比对位置和生成仿真数据时的实际位置并不需要完全比上，只要二者之间
+的距离在一定距离内即认为这个比对结果是正确的，本文中所有的实验中这一距离定义为20。
+
 
 \section{双端序列比对}
 在前面的预备知识中我们提到了双端测序方法不同于单端测序，同一个fragement会得到两个read序列。CSAA可以支持双端数据的比对，比对的
 算法和单端算法一致，分别对同一个个序列的reaed1和read2采用算法\ref{alg:alignment}进行比对，得到两个比对结果，最终使用合并程序
 合并两个比对结果，得到最终比对结果。
 
-如图\ref{fig:pairend}所示，双端测序时，因为测序精度的限制只能测序一个fragement的两端的部分数据，而大多数情况下因fragement比较
+如图\ref{fig:merge} phase3所示，双端测序时，因为测序精度的限制只能测序一个fragement的两端的部分数据，而大多数情况下因fragement比较
 长两端的数据并不重合，所以read1和read2之间会有一个未测序的distance。。根据测序规则，序列都是从5'端开始读，因而read1和read2必然
 是在DNA的不同链上，但测序时很难知道read1和read2是在DNA的某个具体链上，所以我们在比对时，需要把reaed1，read1的互补链，read2，
 read2的互补连这四个序列分别和参考序列比对。但这样一来会导致需要比对四次，需要合并四个比对结果，合并的复杂度会很大。因此，CSAA
@@ -163,11 +228,33 @@ read2相匹配的。按照前文所述的双端测序方法可知，read1和read
     \caption{双端比对示例} \label{fig:merge}
 \end{figure}
 
+综上所述，在CSAA中用双端比对可以提高比对的精度，表\ref{tab:alignmentaccuracy}也反映了这点，但对应的双端比对要耗费更多的时间，是
+单端比对的两倍时间多。表\ref{tab:alignmentaccuracy}使用的数据和图\ref{fig:seedaccuracy}中使用的数据相同，比对过程都使用单线程。
+
+\begin{table}[htbp]
+    \caption{单端比对和双端比对结果对比}
+    \label{tab:alignmentaccuracy}
+    \centering
+    \begin{tabular}{lrrrrrr}
+        \toprule
+        \multirow{2}{*}{短读长度} & \multicolumn{3}{c}{单端比对} & \multicolumn{3}{c}{双端比对}\\
+        \cline{2-4}
+        \cline{5-7}
+        &Time(s) &Rec(\%) &Acc(\%) &Time(s) &Rec(\%) &Acc(\%)\\
+        \midrule
+        35 &201 &80 &98.1 &480 &88.4 &98.2 \\
+        70 &460 &84 &98.1 &1011 &92.2 &98.2 \\
+        125 &1071 &87 &98.3 &2212 &94.1 &98.4 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
 
 \section{CSAA对比实验测试}
 
-为测试CSAA的性能，本文同时测试了MAQ\cite{li2008mapping},Bowtie\cite{langmead2009ultrafast}和BWA\cite{li2009fast}这三个比对工
-具，和CSAA进行比较。分别对比这几个工具在不通规模数据上建立索引时的时间，需要的内存；以及在模拟数据上和真实数据上的比对能力。
+为测试CSAA的性能，本文同时测试了Bowtie\cite{langmead2009ultrafast}和BWA\cite{li2009fast}这两个个比对工
+具，和CSAA进行比较。分别对比这几个工具在不同规模数据上建立索引时的时间，需要的内存；以及在模拟数据上和真实数据上的比对能力。
 MAQ为所有的短读序列建立hash表，进而遍历整个参考序列来实现比对。Bowtie和BWA是用基于BWT的索引建立
 的比对工具，其中Bowtie采用了回溯法实现替换操作，但不支持insert和delete操作，即上文中所论述的gap alignment。BWA除了支持insert，
 delete之外，还加入了smith-water方法提高比对精度。比对测试中，我们的csaa和bwa,bowtie等都只使用单线程运行。
@@ -175,12 +262,15 @@ delete之外，还加入了smith-water方法提高比对精度。比对测试中
 \subsection{测试环境和数据}
 
 在对CSAA的对比测试中，我们使用gcc 4.6.3编译链接，并且使用了-O3优化。系统环境为ubuntu 12.04 amd64，运行在一台具有18G内存的工
-作站上。测试使用的数据是标准的人类基因组序列hg18.fa，来自1000 Genome Project的NCBI build 36，模拟数据也是在该数据上生成。所
-有测试数据均使用默认选项运行。
+作站上。测试使用的数据是标准的人类基因组序列，ucsc version为hg19，来自1000 Genome Project的名为Genome Reference Consortium GRCh37
+的参考序列。实验中所用的模拟数据也是在该数据上生成。
+
+测试中，CSAA和BWA在测试时均指定单线程，seed长为32。Bowtie使用的是Bowtie-v1，使用单线程，且不使用-best参数，即Bowtie使用DFS搜索。
+Bowtie使用默认的长为31的seed。模拟数据的获取和比对精度结果获得中使用了SAMtools系列工具。
 
 \subsection{索引建立时间}
 表\ref{tab:tab1}中对比了bowtie,BWA和CSAA三种工具分别建立索引时所需要的时间和内存消耗对比情况，表中数据分别对应几个工具在索引
-512M,1024M和2048M的数据时所需要的时间和内存。测试使用的各个数据均来自NCBI build 36数据的截取数据。
+512M,1024M和2048M的数据时所需要的时间和内存。CSAA中使用经典方法构建压缩后缀数组。
 
 \begin{table}[htbp]
     \caption{建立索引的时间空间对比}
@@ -194,8 +284,8 @@ delete之外，还加入了smith-water方法提高比对精度。比对测试中
         & 512M &1024M &2048M &512M &1024M &2048M\\
         \hline
         Bowtie&1311 &2720 &5581 &987 &1109 &1210 \\
-        BWA&531 &1101 &2445 &1890 &1902 &2006 \\
-        CSAA&413 &843 &2065 &2483 &5325 &11435 \\
+        BWA&531 &1103 &2203 &1890 &1902 &2006 \\
+        CSAA&413 &840 &1792 &2113 &8680.1 &19532.5 \\
         \hline
     \end{tabular}
 \end{table}
@@ -204,56 +294,72 @@ delete之外，还加入了smith-water方法提高比对精度。比对测试中
 reference建立了索引，用时会较长。其中Bowtie建立索引时是分块建立索引的，最终再合并成一个索引，时间效率最差，但需用内存空间最小。
 
 \subsection{模拟数据测试}
-本文使用SAMtools工具包中的wgsim工具从人类基因组序列中随机生成模拟的短读序列。然后，分别用四种比对工具对这些模拟的short
-短读s序列进行比对，然后测试比对结果。因为这些模拟数据在参考序列上的映射位置是已知的，所以就可以计算出各个工具的比对结果的
-精确率。
+本文使用SAMtools工具包中的wgsim工具从人类基因组序列hg19中随机生成模拟的短读序列。然后，分别用四种比对工具对这些模拟的
+短读序列进行比对，最后测试比对速度以及比对精确度。因为这些模拟数据在参考序列上的映射位置是已知的，所以可以计算出各个工具的比
+对结果的accuracy。本次实验中的精度测试工具使用SAMtolls中的wgsim\_eval.pl程序。
 
-表\ref{tab:tab2}所示为四个测试工具的比对结果展示，参考序列是人类基因组序列，模拟短读序列的长度为70bp，总共有1000000个
-短读，所有序列均为single end序列。
+表\ref{tab:singleend}和\ref{tab:pairend}所示为四个测试工具在单端和双端模拟数据上的的比对结果展示，参考序列是人类基因组序列
+hg19，模拟短读序列的长度为70bp，总共有100万个短读。
+
+表\ref{tab:singleend}和\ref{tab:pairend}中的实验的模拟数据使用wgsim程序在人类基因组上生成的长为70bp，生成过程中，单核苷酸变
+异(SNP)的概率是0.09\%，indel变异的概率是0.01\%，indel的长度满足正太分布$N(500,50)$。对比结果中Rec是recall rate，Acc是accuracy。
+意义如上文中所解释。从表中可以看出，在长为70bp的100万个短读的映射中，CSAA相对于BWA和Bowtie在查询时更节省内存，在recall rate和
+accuracy上和BWA，Bowtie基本持平。%出现这样的结果是因为BWA和CSAA都支持indel操作，而Bowtie则只支持substitution操作，当短读序列比
+%较长时其比对效果就会下降。
+
 
 \begin{table}[htbp]
-    \caption{模拟数据比对测试}
-    \label{tab:tab2}
+    \caption{单端模拟数据比对测试}
+    \label{tab:singleend}
     \centering
     \begin{tabular}{lrrrr}
-       \hline \\
-       Program&Time(s)&Memory(M)&Conf(\%)&Err(\%)\\
-       \hline \\
-       Bowtie&1701&2911&86.3&0.2\\
-       BWA&1519&3116&90.7&0.12\\
-       CSAA&2241&2905&89.9&0.13\\
-       \hline
+       \toprule \\
+       Program&Time(s)&Memory(M)&Rec(\%)&Acc(\%)\\
+       \midrule \\
+       Bowtie&612&2911&85.3&99.8\\
+       BWA&382&3116&90.7&99.8\\
+       CSAA&460&2905&84&98.1\\
+       \bottomrule
     \end{tabular}
 \end{table}
 
-表\ref{tab:tab2}中的实验的模拟数据使用wsgi程序在人类基因组上生成的长为70bp，生成过程中，单核苷酸变异(SNP)的概率是0.09\%，
-indel变异的概率是0.01\%，indel的长度是满足正太分布$N(500,50)$。
-对比结果中conf是有确定的比对结果的短读的比率，指的是所有短读中比对程序可以比对到映射位置的短读所占比例。
-而Err错误率是指在所有的有确定映射位置的短读中的比对位置错误的短读的比率。从中可以看出，在长为70bp的100万个短读的映射中，CSAA相
-对于BWA和Bowtie在查询时更节省内存，在确定率和错误率上和BWA持平，优于Bowtie。出现这样的结果是因为BWA和CSAA都支持indel操作，而
-Bowtie则只支持substitution操作，当短读序列比较长时其比对效果就会下降。
+
+\begin{table}[htbp]
+    \caption{双端模拟数据比对测试}
+    \label{tab:pairend}
+    \centering
+    \begin{tabular}{lrrrr}
+       \toprule \\
+       Program&Time(s)&Memory(M)&Rec(\%)&Acc(\%)\\
+       \midrule \\
+       Bowtie&603&3011&89.6&99.2\\
+       BWA&820&3117&94.3&99.8\\
+       CSAA&1011&2905&92.2&98.2\\
+       \bottomrule
+    \end{tabular}
+\end{table}
 
 \subsection{真实数据测试}
-为测试CSAA在真实数据上的表现，本文从网络上下载了12.2 million个长为51bp的短读数据。这些数据来自European Read Archive(AC:ERR000589)
-，是1000 Genomes Project的一个名男性基因组测序，由Illumina测序技术完成测序。参考序列选的是人类基因组，测序编号NCBI build 36。
+为测试CSAA在真实数据上的表现，本文从网络上下载了12.2 million个长为51bp的短读数据库。这些数据来自European Read Archive(AC:ERR000589)
+，是1000 Genomes Project的一个名男性基因组测序，由Illumina测序技术完成测序。参考序列选的是人类基因组，测序编号hg19。
 
 \begin{table}[htbp]
     \caption{实际数据比对测试}
     \label{tab:tab3}
     \centering
     \begin{tabular}{lrrr}
-       \hline \\
-       Program&Time(m)&Memory(M)&Conf(\%)\\
-       \hline \\
-       Bowtie&303&3122&84.6\\
-       BWA&221&3887&88.4\\
-       CSAA&409&3313&86.5\\
-       \hline
+       \toprule
+       Program&Time(min)&Memory(MB)&Recall(\%)\\
+       \midrule
+       Bowtie&53&3122&84.6\\
+       BWA&34&3887&88.4\\
+       CSAA&87&3413&84.5\\
+       \bottomrule
     \end{tabular}
 \end{table}
 
-表\ref{tab:tab3}中的测试结果显示，在实际数据中CSAA也具有较高的准确性，86\%的短读序列都能映射到参考序列上，
-基本性能和BWA接近，相对BWA使用更少的内存空间。
+表\ref{tab:tab3}中的测试结果显示，在实际数据中CSAA也具有较高的准确性，84\%的短读序列都能映射到参考序列上，
+基本性能和BWA很接近。
 
 \section{本章小节}
 

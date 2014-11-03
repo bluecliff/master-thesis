@@ -449,6 +449,7 @@
        {\@latex@warning{Empty `thebibliography' environment}}%
       \endlist}
 
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}} %单元格内换行
 
 \renewenvironment{thanks}
     {\Nchapter{\XDBA@label@thanks}}
