@@ -1,0 +1,63 @@
+\begin{symbolstable}\renewcommand{\arraystretch}{1.3}
+
+\noindent
+\begin{table}[ht]
+\begin{tabular}{p{5cm}p{10cm}}
+\textbf{符号}&\textbf{名称}\\
+$T$ & 输入的原文本序列串\\
+$T[i]$ &输入序列的第$i$个字符\\
+$T_i$ &输入序列的第$i$个后缀\\
+$P$ & 输入的待查询的序列串\\
+$P[i]$ &输入待查训序列的第$i$个字符\\
+$n$&输入原串的长度\\
+$\Sigma$&字符集\\
+$m$ &输入待查训序列的长度\\
+$P_i$ &输入待查训序列的第$i$个后缀\\
+$l_i$ &模式序列$P_i$在原序列$T$上的位置\\
+$\$$ &缀在模式最后的标识字符，小于模式中所有的字符\\
+$SA$ &后缀后缀\\
+$SA^{-1}$ &后缀数组的逆数组\\
+$SA_T$ &输入序列$T$的后缀数组\\
+$CSA$ & 压缩后缀数组\\
+$\Phi$&压缩后缀数组变换后的数组\\
+$difference$ & 短读相似度距离\\
+$seed$ & 短读的可信部分\\
+\end{tabular}
+\end{table}
+\noindent
+\clearpage
+\begin{table}[ht]
+\begin{tabular}{p{6.5cm}p{7cm}}
+\textbf{函数}&\textbf{名称}\\
+$\alpha (c)$ &序列中小于字符$c$的所有字符的个数\\
+$\beta (c)$ &序列中等于字符$c$的所有字符的个数\\
+$rank_0(i)$ &一个01序列上前$i$位中的所有0的个数\\
+$select_0(i)$ &一个01序列上第$i$个0出先的位置\\
+$rank_1(i)$ &一个01序列上前$i$位中的所有1的个数\\
+$select_1(i)$ &一个01序列上第$i$个1出先的位置\\
+$BackwardSearch(P,\Phi,\alpha,\beta)$ & 在压缩后缀数组上用后向搜索方法搜索模式$P$的位置\\
+$ExactMatch(c,\Phi,\alpha,\beta,l_{old},r_{old})$& 在压缩后缀数组上做精确匹配$c$\\
+$InExactMatch(\Phi,\alpha,\beta,P)$&在压缩后缀数组上做近似匹配$P$\\
+$CalculatDifference(\Phi,\alpha,\beta,P)$&计算$P$的$difference$距离\\
+$ProcedureIndel(P,\Phi,\alpha,\beta,x,heap)$&处理近似匹配序列$x$的indel\\
+$CsaAlignment(\Phi,\alpha,\beta,P)$&在参考序列$T$的压缩后缀数组上比对短读$P$
+\end{tabular}
+\end{table}
+
+\end{symbolstable}
+
+
+\begin{abbreviation}\renewcommand{\arraystretch}{1.3}
+\noindent
+\begin{table}[ht]
+\begin{tabular}{p{2cm}p{6cm}p{8cm}}
+\textbf{缩略语}&\textbf{英文全称}&\textbf{中文对照}\\
+SA &Suffix Array &后缀数组\\
+CSA & Compressed Suffix Array &压缩后缀数组\\
+CSAA & Compressed Suffix Array shot reads Aligment tool & 压缩后缀数组短读比对工具\\
+BWT & Burrows-Wheeler transform&BW变换\\
+BWA & BWT short reads Alignment tool & BWT短读比对工具\\
+indel & insert and delete &插入和删除\\
+\end{tabular}
+\end{table}
+\end{abbreviation}

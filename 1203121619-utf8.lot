@@ -1,0 +1,19 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Fastq格式支持的核苷酸符号}}{7}{table.2.1}
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces $acaaccg\$$的后缀数组和$\Phi $数组}}{11}{table.3.1}
+\contentsline {table}{\numberline {3.2}{\ignorespaces RRR方法的时间效率和空间效率}}{18}{table.3.2}
+\contentsline {table}{\numberline {3.3}{\ignorespaces Jacobson方法的时间效率和空间效率}}{18}{table.3.3}
+\contentsline {table}{\numberline {3.4}{\ignorespaces RRR方法和其他几种方法的压缩效率对比}}{19}{table.3.4}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces 压缩后缀数组构造算法的时间空间效率对比}}{37}{table.5.1}
+\contentsline {table}{\numberline {5.2}{\ignorespaces 单端比对和双端比对结果对比}}{41}{table.5.2}
+\contentsline {table}{\numberline {5.3}{\ignorespaces 建立索引的时间空间对比}}{43}{table.5.3}
+\contentsline {table}{\numberline {5.4}{\ignorespaces 单端模拟数据比对测试}}{44}{table.5.4}
+\contentsline {table}{\numberline {5.5}{\ignorespaces 双端模拟数据比对测试}}{44}{table.5.5}
+\contentsline {table}{\numberline {5.6}{\ignorespaces 实际数据比对测试}}{44}{table.5.6}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }

@@ -57,6 +57,7 @@
 % set equation numer as (1-5)
 \renewcommand{\theequation}{\thechapter-\arabic{equation}}
 
+\RequirePackage{setspace}
 %% check pdfTeX mode
 \RequirePackage{ifpdf}
 %% check XeLaTeX mode
@@ -187,7 +188,8 @@
 \def\XDBAunderline{\@ifnextchar[\XDBA@underline\underline}
 
 \def\XDBA@dashuline[#1]#2{%
-\dashuline{\hbox to #1{\hfill#2\hfill}}}
+%\dashuline{\hbox to #1{\hfill#2\hfill}}}
+\underline{\hbox to #1{\hfill#2\hfill}}}
 \def\XDBAdashuline{\@ifnextchar[\XDBA@dashuline\dashuline}
 
 %% define the bookface
@@ -248,14 +250,14 @@
     \ifXDBA@master
         \setlength{\baselineskip}{24pt}
         {
-            \bf\heiti\zihao{5}\noindent
+            %\bf\heiti\zihao{5}\noindent
             %\XDBA@label@identifier\XDBAdashuline[4.45cm]{\XDBA@value@identifier}\hspace*{1cm}
             %\XDBA@label@schoolnumber\XDBAdashuline[4.45cm]{\XDBA@value@schoolnumber}\\
             %\XDBA@label@classnumber\XDBAdashuline[4.45cm]{\XDBA@value@classnumber}\hspace*{1cm}
             %\XDBA@label@classification\XDBAdashuline[4.45cm]{\XDBA@value@classification}
             %\vskip \stretch{15}\bf\heiti\zihao{4}
             \vglue 14cm
-            \bf\songti\zihao{2}基于压缩后缀数组的短读比对算法
+            \bf\songti\zihao{2}\XDBA@value@title
             \vskip \stretch{3}
             %\noindent\makebox[3.08cm][s]{\XDBA@label@title}\songti\XDBAdashuline[11.88cm]{\XDBA@value@title}
             %\vskip \stretch{0.3}
@@ -308,6 +310,88 @@
     \fi
 }
 
+%%制作题名
+\newcommand\makethemename{
+    \cleardoublepage
+    \thispagestyle{empty}
+    \ifXDBA@master
+        \setlength{\baselineskip}{24pt}
+        {
+            \songti\zihao{5}\noindent
+            \textbf{
+                \makebox[1.5cm][s]{\XDBA@label@identifier}\XDBAdashuline[2.45cm]{\XDBA@value@identifier}\hspace*{4cm}
+                \makebox[1.5cm][s]{\XDBA@label@schoolnumber}\XDBAdashuline[2.45cm]{\XDBA@value@schoolnumber}\\
+                \makebox[1.5cm][s]{\XDBA@label@classnumber}\XDBAdashuline[2.45cm]{\XDBA@value@classnumber}\hspace*{4cm}
+                \makebox[1.5cm][s]{\XDBA@label@classification}\XDBAdashuline[2.45cm]{\XDBA@value@classification}
+            }
+            \begin{center}
+            \vglue 3cm
+            \textbf{
+                \heiti\zihao{-1}西安电子科技大学\\
+                \vglue 2cm
+                \songti\zihao{2}硕士学位论文\\
+                \vglue 3cm
+                \songti\zihao{2}\XDBA@value@title\\
+            }
+            \end{center}
+            \vglue 3cm
+            \songti\zihao{4}
+            \hspace{5cm}
+            \parbox[l]{9cm}{
+                \begin{spacing}{2}
+                \textbf{\XDBA@label@author:}\quad \XDBA@value@author\\
+                \textbf{\XDBA@label@majorclass:}\quad \XDBA@value@majorclass\\
+                \textbf{\XDBA@label@major:}\quad \XDBA@value@major\\
+                \textbf{\XDBA@label@degreeclass:}\quad \XDBA@value@degreeclass\\
+                \textbf{\XDBA@label@advisor:}\quad\XDBA@value@advisor\\
+                \textbf{\XDBA@label@date:}\quad \XDBA@value@date\\
+                \end{spacing}
+                }
+            \makebox[1cm]{}
+            \setlength{\baselineskip}{20pt}
+        }
+    \fi
+    \clearpage
+}
+%英文题名
+\newcommand\makeenthemename{
+    \cleardoublepage
+    \thispagestyle{empty}
+    \ifXDBA@master
+        \setlength{\baselineskip}{24pt}
+        {
+            \begin{center}
+            {
+                \bf\zihao{2}\noindent
+                \XDBA@value@entitle\\
+                \XDBA@value@enresttitle\\
+            }
+            \vglue 3.4cm
+            {
+                \zihao{3}
+                A thesis submitted to\\
+                XIDIAN UNIVERSITY\\
+                in partial fulfillment of the requirements\\
+                of Master graduation\\
+
+                \vglue 8cm
+
+                By\\
+                Li Shuangjiang\\
+                (Computer Softwear and Theroy)\\
+                Supervisor: Prof. Hongwei Huo\\
+                November 2014\\
+            }
+            \end{center}
+            \makebox[1cm]{}
+            \setlength{\baselineskip}{20pt}
+        }
+    \fi
+    \clearpage
+}
+
+
+
 \fancypagestyle{plain}{%
     \fancyhf{}%
     \fancyhead{} % clear all header fields
@@ -320,7 +404,7 @@
 \fancypagestyle{content}{%
     \fancyhf{}
     \fancyhead[CO]{\songti\zihao{5} \nouppercase \leftmark}
-    \fancyhead[CE]{\songti\zihao{5} \nouppercase {\XDBA@value@title\XDBA@value@resttitle}}
+    \fancyhead[CE]{\songti\zihao{5} \nouppercase {西安电子科技大学硕士研究生毕业论文}}
     %\fancyhead[LE,RO]{\songti\zihao{-5} ~\thepage~}
     \fancyfoot[C]{\songti\zihao{-5} ~\thepage~}
     \renewcommand{\headrulewidth}{0.75pt}%
@@ -329,7 +413,7 @@
 \fancypagestyle{tableOfContent}{%
     \fancyhf{}
     \fancyhead[CO]{\songti\zihao{5} \nouppercase \leftmark}
-    \fancyhead[CE]{\songti\zihao{5} \nouppercase \leftmark}
+    \fancyhead[CE]{\songti\zihao{5} \nouppercase {西安电子科技大学硕士研究生毕业论文}}
     %\fancyhead[LE,RO]{\songti\zihao{-5} ~\thepage~}
     \fancyfoot[C]{\songti\zihao{-5} ~\thepage~}
     \renewcommand{\headrulewidth}{0.75pt}%
@@ -339,7 +423,7 @@
     \fancyhf{}
     \fancyhead{}
     \fancyhead[CO]{\songti\zihao{5} \leftmark}
-    \fancyhead[CE]{\zihao{5} {\XDBA@value@title\XDBA@value@resttitle}}
+    \fancyhead[CE]{\zihao{5} {西安电子科技大学硕士研究生毕业论文}}
     \fancyhead[LE,RO]{}
     \fancyfoot[C]{\songti\zihao{-5} ~\thepage~}
     \renewcommand{\headrulewidth}{0.75pt}%
@@ -368,14 +452,36 @@
     \vspace{2ex}\noindent{\heiti\zihao{-4} \XDBA@label@keywords} \heiti\zihao{-4}#1
 }
 
+\newcommand\englishkeywords[1]{%
+    \vspace{2ex}\noindent{\bf\zihao{-4} \XDBA@label@englishkeywords} \bf\zihao{-4}#1
+}
+
 \newenvironment{englishabstract}{
     \NCSchapter{\bf\zihao{3} \XDBA@label@englishabstract}{\XDBA@label@englishabstract}
 }{
     \pagestyle{front}\thispagestyle{front}\cleardoublepage
 }
 
-\newcommand\englishkeywords[1]{%
-    \vspace{2ex}\noindent{\bf\zihao{-4} \XDBA@label@englishkeywords} \bf\zihao{-4}#1
+\newenvironment{figureindex}{
+    \NCSchapter{\heiti\zihao{3} 插图索引}{插图索引}
+}{
+    \pagestyle{front}\thispagestyle{front}\clearpage
+}
+
+\newenvironment{tableindex}{
+    \NCSchapter{\heiti\zihao{3} 表格索引}{表格索引}
+}{
+    \pagestyle{front}\thispagestyle{front}\cleardoublepage
+}
+\newenvironment{symbolstable}{
+    \NCSchapter{\heiti\zihao{3} 符号对照表}{符号对照表}
+}{
+    \pagestyle{front}\thispagestyle{front}\clearpage
+}
+\newenvironment{abbreviation}{
+    \NCSchapter{\heiti\zihao{3} 缩略语对照表}{缩略语对照表}
+}{
+    \pagestyle{front}\thispagestyle{front}\cleardoublepage
 }
 
 \renewcommand\tableofcontents{%
@@ -394,7 +500,6 @@
 }
 
 \addtocontents{toc}{\let\string\XDBA@spaceChar\relax}
-
 \newcommand\NCSchapter[2]{%
     \renewcommand{\chapter}{\if@openright\clearpage\else\clearpage\fi
     \global\@topnum\z@ \@afterindentfalse \secdef\@chapter\@schapter}
@@ -518,6 +623,10 @@
 \newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}} %单元格内换行
 
 \renewenvironment{thanks}{\Nchapter{\XDBA@label@thanks}}{}
+
+%作者简介
+\newenvironment{authorintro}{\Nchater{作者简介}}
+
 \setcounter{secnumdepth}{4}
 \newtheoremstyle{break}% name
 {}%      Space above, empty = `usual value'
