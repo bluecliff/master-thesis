@@ -625,7 +625,7 @@
 \renewenvironment{thanks}{\Nchapter{\XDBA@label@thanks}}{}
 
 %作者简介
-\newenvironment{authorintro}{\Nchater{作者简介}}
+\newenvironment{authorintro}{\Nchapter{作者简介}}{}
 
 \setcounter{secnumdepth}{4}
 \newtheoremstyle{break}% name

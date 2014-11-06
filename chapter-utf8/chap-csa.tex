@@ -85,7 +85,7 @@ $c$的后缀的数目。则有以下结论：
 
 \section{简明数据结构}
 
-简明数据结构(Succint Data Structure)是对整数序列进行简明编码，达到压缩存储的效果并实现常数时间解码的一类数据结构的总称。本节中
+简明数据结构(Succint Data Structure)\cite{jacobson1988succinct}是对整数序列进行简明编码，达到压缩存储的效果并实现常数时间解码的一类数据结构的总称。本节中
 将以Vitter原始论文中使用的Rice编码为例阐述简明数据结构的存储原理。实际上，除了Rice编码，简明数据结构还可以使用很多编码形式，
 如Elias编码\cite{witten1999managing}等。
 
@@ -317,7 +317,7 @@ sdarray都是类似于RRR方法，bit per symbol有可能达到小于1的实现�
     \caption{RRR方法和其他几种方法的压缩效率对比}
     \label{tab:tabcom}
     \centering
-    \begin{tabular}{ll}
+    \begin{tabular}{lr}
     \toprule
     数据结构&Bit Per Symbol\\
     \midrule

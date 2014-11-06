@@ -5,25 +5,37 @@
 需要更快速准确的比对程序来处理。第一代基于散列表技术的序列比对算法如MAQ等
 能够快速准确的完成比对工作，但其不支持gap比对的特性使得在短读序列(short reads)
 过长导致indel出现频繁时，比对的精度也随之下降。另一方面，近年来压缩索引(BWT,CSA,FM-index)
-领域的相关研究使得在内存中索引人类基因组这样的大规模序列成为可能。这导致
-近年来出现了很多基于压缩索引的短读比对算法，如BWA等。本文提出了一种基于压
-缩后缀数组和后向搜索实现的近似匹配的算法来实现短读比对，在比对时间和比对
+领域的相关研究使得在较小内存中索引人类基因组这样的大规模序列成为可能。这导致
+近年来出现了很多基于压缩索引的短读比对算法，如BWA,Bowtie等。本文提出了一种基于压
+缩后缀数组和后向搜索实现的近似匹配的算法来实现短读比对，在比对时间和空间以及比对
 精度上都取得了很好的效果。
 
 本文提出并实现的基于压缩后缀数组的短读比对算法(CSAA)，采用了压缩后缀数组
 的后向搜索来做近似匹配。通过引入搜索树，CSAA支持完全的gap比对。另一方面
 CSAA在搜索树上使用了一种类似堆的优先堆数据结构，使得搜索树上的搜索空间大大
-下降，而且每一次的搜索方向都能保证是最优的。最后结合罚分机制以及difference
-距离，定义seed等方法，进一步降低搜索空间，提高CSAA的比对速度。
+下降，而且每一次的搜索方向都能保证是最优的。最后结合罚分机制以及$difference$
+距离，定义seed等方法，进一步降低搜索空间，提高CSAA的比对速度和精度。
+
+CSAA的高效体现在两个方面，一是空间高效的索引方法。二是高效的近似匹配方法，包括
+后向搜索，seed策略和多线程比对技术的利用。本文采用了增量法进行压缩后缀数组索引
+的构建，从而跳过后缀数组的构建，降低了对内存的需求。而在比对时，seed的引入使得
+在比对短读的前几十个核苷酸就可以放弃大部分无效的搜索方向。多个短读比对的相互
+独立使得并行化成为可能，CSAA使用多线程时可以获得数倍的加速优势，可以根据计算
+机的cpu核数指定多个线程，以取得最优的比对速度。
+
 
 CSAA支持单端和双端序列比对，以Fastq格式输入，输出为标准的SAM(Sequence Alignment Map)
-格式。CSAA还支持多线程比对，可以根据计算机的运算能力指定多个线程，以取得
-数倍的加速优势。
+格式。
 
 \keywords{短读比对，序列比对，压缩索引，压缩后缀数组}
+
 \end{abstract}
 
 \begin{englishabstract}
+
+\setlength\parindent{0em}
+
+\vspace{2ex}
 Nowadays,decreasing cost and better accessibility of next generation sequencing methods
 have produced a large amount of short reads whic is calling for the development of fast
 and accurate read alignment programs.A first generation of hash-table based methods has
@@ -35,6 +47,7 @@ as human genome in the main memory,and many alignment method based on compressed
 been developed,for example,BWA.In this paper we show how to build a software called CSAA that
 exploits a CSA index of reference sequence,and perform well on alignment speed and accuration.
 
+\vspace{2ex}
 We proposed and implemented Compresses Suffix Array Alignment(CSAA),a new short read alignment
 tool that is bases on backward search with compressed suffix array,to align short reads to a
 large reference such as human genome.CSAA use a seach tree on multiple proximate sequences to
@@ -42,10 +55,22 @@ support mismatch and gapped alignment,CSAA also introduced a heap like structure
 search space on seach tree.Finally,with the help of penalty strategy and seed,CSAA achieved
 similar accuracy and faster speed than MAQ.
 
+
+\vspace{2ex}
+CSAA has two advantage. On one hand,increment CSA construction algorithm has beeb used in
+CSAA,which directly construct CSA without SA,and use little memory to classic CSA construction algorithm.
+On the other hand,CSAA used seed strategy to speed up alignment,which can drop most of invalid
+seach direction when aligning the first dozons of nucleotides of a read.Lastly,indpendency of
+every short read's aligment makes parallel aligning avaliable.CSAA speed up efficiently by
+adopting multi-thread.
+
+\vspace{2ex}
 CSAA supports single-end and pair-end mapping with Fastq as input format and SAM(Sequence Alignment Map)
 as output format.CSAA also support multi-thread running on a multi-core machine to get a faster
 alignment speed.
 
+
 \englishkeywords{short reads alignment, DNA sequence alignment, comressed index, compress suffix array}
+
 \end{englishabstract}
 

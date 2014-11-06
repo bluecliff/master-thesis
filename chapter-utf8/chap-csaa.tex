@@ -88,19 +88,19 @@ $\Phi$数组，首先$T'$的后缀数组是很容易从$T$的后缀数组获取�
     \caption{压缩后缀数组构造算法的时间空间效率对比}
     \label{tab:index}
     \centering
-    \begin{tabular}{lrrrr}
+    \begin{tabular}{lrrrrr}
         \toprule
-        \multirow{2}{*}{序列大小}&\multicolumn{2}{c}{经典构造方法}&\multicolumn{2}{c}{增量构造方法}\\
+        \multirow{2}{*}{序列大小}&\multicolumn{2}{c}{经典构造方法}& &\multicolumn{2}{c}{增量构造方法}\\
         \cline{2-3}
-        \cline{4-5}
-        &CPU times(s) & \tabincell{l}{peak working\\memory(MB)}&CPU times(s)& \tabincell{l}{peak working \\memory(MB)}\\
+        \cline{5-6}
+        &CPU times(s) & \tabincell{l}{peak working\\memory(MB)}&&CPU times(s)& \tabincell{l}{peak working \\memory(MB)}\\
         \midrule
-        128MB& 84 & 899.6 & 242 & 189.5\\
-        256MB& 180 & 1867.8 & 515 & 377.9\\
-        512MB& 376 & 2113.6 & 1103 & 755.1\\
-        1024MB& 840 & 8680.1 & 2408 & 1510.3\\
-        2048MB& 1792 & 19532.5 & 5336 & 3020.5\\
-        3051MB& - & - & 9004 & 5974\\
+        128MB& 84 & 899.6& & 242 & 189.5\\
+        256MB& 180 & 1867.8& & 515 & 377.9\\
+        512MB& 376 & 2113.6 & &1103 & 755.1\\
+        1024MB& 840 & 8680.1 & &2408 & 1510.3\\
+        2048MB& 1792 & 19532.5 & &5336 & 3020.5\\
+        3051MB& - & - & &9004 &5974\\
         \bottomrule
     \end{tabular}
 \end{table}
