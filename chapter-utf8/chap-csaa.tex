@@ -146,10 +146,10 @@ hg19.fa，短读序列是用wgsim仿真程序生成的模拟短读数据，短�
 的内存也随之增多。图\ref{fig:alignment}中的曲线还显示，比对的速度以及内存消耗和短读长是密切相关的，短读越长，比对的时间也
 越长，所需内存也越多。
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
     \centering
     \includegraphics[width=1.1\textwidth]{alignment.pdf}
-    \caption{多进程比对的时间空间效率} \label{fig:alignment}
+    \caption{多线程比对的时间空间效率} \label{fig:alignment}
 \end{figure}
 
 \section{使用seed提高比对速度}
@@ -160,7 +160,7 @@ hg19.fa，短读序列是用wgsim仿真程序生成的模拟短读数据，短�
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.7\textwidth]{seed.eps}
+    \includegraphics[width=0.9\textwidth]{seed.eps}
     \caption{seed示例} \label{fig:seed}
 \end{figure}
 

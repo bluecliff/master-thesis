@@ -9,20 +9,20 @@ accuracy_rate_70=[0.97,0.976,0.98,0.988,0.99,0.992,0.993]
 
 
 
-mpl.rcParams['font.sans-serif'] = ['Adobe Fangsong Std'] #指定默认字体
-mpl.rcParams['axes.unicode_minus'] = False #解决保存图像是负号'-'显示为方块的问题
+#mpl.rcParams['font.sans-serif'] = ['Adobe Fangsong Std'] #指定默认字体
+#mpl.rcParams['axes.unicode_minus'] = False #解决保存图像是负号'-'显示为方块的问题
 #plt.figure()
 figure(figsize=[12,5],dpi=128)
 subplot(1,2,1)
 plot(seed_length,working_time_70,'o-')
-xlabel(u"Seed Length")
-ylabel(u"Time(s)")
+xlabel("Seed Length")
+ylabel("Time(s)")
 xlim(-4,52,)
 xticks(xrange(0,52,8))
 subplot(1,2,2)
 plot(seed_length,recall_rate_70,'o-',label='Recall Rate')
 plot(seed_length,accuracy_rate_70,'x-',label='Accuracy')
-xlabel(u"Seed Length")
+xlabel("Seed Length")
 xlim(-4,52)
 xticks(xrange(0,52,8))
 legend(loc="lower left")

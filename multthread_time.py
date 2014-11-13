@@ -11,8 +11,8 @@ working_memory_125=[3402596352,3482193920,3511316480,3561840640,3591553024,38146
 working_time_125=[1071,586,590,590,589,592]
 
 
-mpl.rcParams['font.sans-serif'] = ['Adobe Fangsong Std'] #指定默认字体
-mpl.rcParams['axes.unicode_minus'] = False #解决保存图像是负号'-'显示为方块的问题
+#mpl.rcParams['font.sans-serif'] = ['Adobe Fangsong Std'] #指定默认字体
+#mpl.rcParams['axes.unicode_minus'] = False #解决保存图像是负号'-'显示为方块的问题
 #plt.figure()
 figure(figsize=[12,5],dpi=128)
 subplot(1,2,1)
