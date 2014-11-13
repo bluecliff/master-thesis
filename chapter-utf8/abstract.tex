@@ -2,7 +2,7 @@
 \begin{abstract}
 
 新一代基因测序技术(NGS)的出现使得测序成本飞速下降，随之而来的是大量的短读
-需要更快速准确的比对程序来处理。第一代基于散列表技术的序列比对算法如MAQ等
+需要更快速准确的比对程序来处理。第一代基于散列表技术的序列比对算法如Bowtie等
 能够快速准确的完成比对工作，但其不支持gap比对的特性使得在短读序列(short reads)
 过长导致indel出现频繁时，比对的精度也随之下降。另一方面，近年来压缩索引(BWT,CSA,FM-index)
 领域的相关研究使得在较小内存中索引人类基因组这样的大规模序列成为可能。这导致
@@ -16,7 +16,7 @@ CSAA在搜索树上使用了一种类似堆的优先堆数据结构，使得搜�
 下降，而且每一次的搜索方向都能保证是最优的。最后结合罚分机制以及$difference$
 距离，定义seed等方法，进一步降低搜索空间，提高CSAA的比对速度和精度。
 
-CSAA的高效体现在两个方面，一是空间高效的索引方法。二是高效的近似匹配方法，包括
+CSAA的高效体现在三个方面，一是空间高效的索引方法。二是高效的近似匹配方法，包括
 后向搜索，seed策略和多线程比对技术的利用。本文采用了增量法进行压缩后缀数组索引
 的构建，从而跳过后缀数组的构建，降低了对内存的需求。而在比对时，seed的引入使得
 在比对短读的前几十个核苷酸就可以放弃大部分无效的搜索方向。多个短读比对的相互
@@ -37,30 +37,30 @@ CSAA支持单端和双端序列比对，以Fastq格式输入，输出为标准�
 
 \vspace{2ex}
 Nowadays,decreasing cost and better accessibility of next generation sequencing methods
-have produced a large amount of short reads whic is calling for the development of fast
-and accurate read alignment programs.A first generation of hash-table based methods has
+have produced a large amount of short reads whic are calling for the development of fast
+and accurate read alignment programs.The first generation of hash-table based methods has
 been developed,including MAQ,which is accurate,feature rich and fast enough to align short
-reads from a single individual.However,MAQ does not support gapped alignment of longer reads
+reads from a single individual.However,Bowtie does not support gapped alignment of longer reads
 where indels may occur frequently.On the other hand,recent experimental studies on compressed
-indexs(BWT,CSA,FM-index)have confirmed their practivality for indexing very long strings such
-as human genome in the main memory,and many alignment method based on compressed index have
+index(BWT,CSA,FM-index)have confirmed their practivality for indexing very long strings such
+as human genome in the main memory,and many alignment methods based on compressed index have
 been developed,for example,BWA.In this paper we show how to build a software called CSAA that
-exploits a CSA index of reference sequence,and perform well on alignment speed and accuration.
+exploits a CSA index of reference sequence,and performs well on alignment speed and accuration.
 
 \vspace{2ex}
-We proposed and implemented Compresses Suffix Array Alignment(CSAA),a new short read alignment
-tool that is bases on backward search with compressed suffix array,to align short reads to a
-large reference such as human genome.CSAA use a seach tree on multiple proximate sequences to
+We proposed and implemented Compressed Suffix Array Alignment(CSAA),a new short read alignment
+tool that is based on backward search with compressed suffix array,to align short reads to a
+large reference such as human genome.CSAA uses a search tree on multiple proximate sequences to
 support mismatch and gapped alignment,CSAA also introduced a heap like structure to decrease
 search space on seach tree.Finally,with the help of penalty strategy and seed,CSAA achieved
 similar accuracy and faster speed than MAQ.
 
 
 \vspace{2ex}
-CSAA has two advantage. On one hand,increment CSA construction algorithm has beeb used in
-CSAA,which directly construct CSA without SA,and use little memory to classic CSA construction algorithm.
-On the other hand,CSAA used seed strategy to speed up alignment,which can drop most of invalid
-seach direction when aligning the first dozons of nucleotides of a read.Lastly,indpendency of
+CSAA has three advantages. Firstly,increment CSA construction algorithm has been used in
+CSAA,which directly constructs CSA without SA,and uses little memory to classic CSA construction algorithm.
+Secondly,CSAA uses seed strategy to speed up alignment,which can drop most of invalid
+search direction when aligning the first dozens of nucleotides of a read.Lastly,indpendency of
 every short read's aligment makes parallel aligning avaliable.CSAA speed up efficiently by
 adopting multi-thread.
 

@@ -155,7 +155,7 @@ hg19.fa，短读序列是用wgsim仿真程序生成的模拟短读数据，短�
 \section{使用seed提高比对速度}
 在DNA测序技术中，单端测序和双端测序都存在测序质量的问题。离引物结合位点越近的位置，测序结果准确率越高，而越远的位置，测序准确率
 越低。根据这一现象，关于Bowtie实现的论文\cite{langmead2009ultrafast}中提出了seed的概念，该论文认为针对短读序列中测序可信度较高
-的部分采用较高的限制，在较低的地方做较低的限制可以取得更快的比对速度和更好的比对结果。如图\ref{fig:seed}所示，read前面蓝色部分
+的部分采用较高的限制，在较低的地方做较低的限制可以取得更快的比对速度和更好的比对结果。如图\ref{fig:seed}所示，read前面绿色部分
 是可信度比较高的seed部分，后面是可信度比较低的非seed部分。
 
 \begin{figure}[htbp]
@@ -199,11 +199,11 @@ accuracy有所提高则是因为较长的seed选取，抛弃了更多的可能�
 
 
 \section{双端序列比对}
-在前面的预备知识中我们提到了双端测序方法不同于单端测序，同一个fragement会得到两个read序列。CSAA可以支持双端数据的比对，比对的
+在前面的预备知识中我们提到了双端测序方法不同于单端测序，同一个fragment会得到两个read序列。CSAA可以支持双端数据的比对，比对的
 算法和单端算法一致，分别对同一个个序列的reaed1和read2采用算法\ref{alg:alignment}进行比对，得到两个比对结果，最终使用合并程序
 合并两个比对结果，得到最终比对结果。
 
-如图\ref{fig:merge} phase3所示，双端测序时，因为测序精度的限制只能测序一个fragement的两端的部分数据，而大多数情况下因fragement比较
+如图\ref{fig:merge} phase3所示，双端测序时，因为测序精度的限制只能测序一个fragment的两端的部分数据，而大多数情况下因fragment比较
 长两端的数据并不重合，所以read1和read2之间会有一个未测序的distance。。根据测序规则，序列都是从5'端开始读，因而read1和read2必然
 是在DNA的不同链上，但测序时很难知道read1和read2是在DNA的某个具体链上，所以我们在比对时，需要把reaed1，read1的互补链，read2，
 read2的互补连这四个序列分别和参考序列比对。但这样一来会导致需要比对四次，需要合并四个比对结果，合并的复杂度会很大。因此，CSAA
@@ -211,16 +211,16 @@ read2的互补连这四个序列分别和参考序列比对。但这样一来会
 \ref{fig:merge}phase1到phase2所示。这样只需要比对两次即可，合并复杂度也降低了。
 
 在合并read1和read2的比对结果时，CSAA除了比较两个比对结果集的比对得分之外，还通过比对distance来选定比对结果。如图\ref{fig:merge}
-所示，途中phase3是一个虚拟的fragment到短读的测序示例，fragement长为10，双端测序的两个短读read1和read2都是４。通过比对程序，phase４
+所示，途中phase3是一个虚拟的fragment到短读的测序示例，fragment长为10，双端测序的两个短读read1和read2都是４。通过比对程序，phase４
 显示了比对的结果，可以看到，read1和read2都有两个最优的比对位置，read1的比对位置是$p1,p1'$，read2的比对位置是$p2,p2'$，由于$p2'>n$，
 即该位置实在参考序列的互补链上，所以首先需要把$p2$转为参考序列的正确位置上，即$2n-p2'$，参考序列上该位置起从左向右的互补链是和
 read2相匹配的。按照前文所述的双端测序方法可知，read1和read2是一个read2的两端的测序数据，所以比对的正确结果中，read1和read2的比对
-位置之差应当为测序的fragement的长度，所以，双断比对的两组比对结果合并的原则即检测比对的两组比对位置的差值
-是否正好是fragement的长度，符合则该比对结果是可信的比对结果，不符合则抛弃。对应的在图\ref{fig:merge}中，可以发现$p1,p2'$这一组
-比对结果才是合理的，因为$|(2n-p2')-p1|$正好是phase3中的fragement的长度。
+位置之差应当为测序的fragment的长度，双端比对的两组比对结果合并的原则即检测比对的两组比对位置的差值
+是否正好是fragment的长度，符合则该比对结果是可信的比对结果，不符合则抛弃。对应的在图\ref{fig:merge}中，可以发现$p1,p2'$这一组
+比对结果才是合理的，因为$|(2n-p2')-p1|$正好是phase3中的fragment的长度。
 
-在实际测序中，我们并不能能知道fragement的准确长度，而且经过分割，复制后的fragement的长度并不是长度都相等的，只能根据测序实验方法获
-取一个范围，CSAA中，默认fragement长度为200到300之间，这是illumina实验的fragement长度范围。
+在实际测序中，我们并不能能知道fragment的准确长度，而且经过分割，复制后的fragment的长度并不是长度都相等的，只能根据测序实验方法获
+取一个范围，CSAA中，默认fragment长度为200到300之间，这是illumina实验的fragment长度范围。
 
 \begin{figure}[htbp]
     \centering
@@ -298,13 +298,13 @@ reference建立了索引，用时会较长。其中Bowtie建立索引时是分�
 \subsection{模拟数据测试}
 本文使用SAMtools工具包中的wgsim工具从人类基因组序列hg19中随机生成模拟的短读序列。然后，分别用四种比对工具对这些模拟的
 短读序列进行比对，最后测试比对速度以及比对精确度。因为这些模拟数据在参考序列上的映射位置是已知的，所以可以计算出各个工具的比
-对结果的accuracy。本次实验中的精度测试工具使用SAMtolls中的wgsim\_eval.pl程序。
+对结果的accuracy。本次实验中的精度测试工具使用SAMtools中的wgsim\_eval.pl程序。
 
 表\ref{tab:singleend}和\ref{tab:pairend}所示为四个测试工具在单端和双端模拟数据上的的比对结果展示，参考序列是人类基因组序列
 hg19，模拟短读序列的长度为70bp，总共有100万个短读。
 
 表\ref{tab:singleend}和\ref{tab:pairend}中的实验的模拟数据使用wgsim程序在人类基因组上生成的长为70bp，生成过程中，单核苷酸变
-异(SNP)的概率是0.09\%，indel变异的概率是0.01\%，indel的长度满足正太分布$N(500,50)$。对比结果中Rec是recall rate，Acc是accuracy。
+异(SNP)的概率是0.09\%，indel变异的概率是0.01\%，生成双端模拟数据时的fragment distance的长度满足正太分布$N(500,50)$。对比结果中Rec是recall rate，Acc是accuracy。
 意义如上文中所解释。从表中可以看出，在长为70bp的100万个短读的映射中，CSAA相对于BWA和Bowtie在查询时更节省内存，在recall rate和
 accuracy上和BWA，Bowtie基本持平。%出现这样的结果是因为BWA和CSAA都支持indel操作，而Bowtie则只支持substitution操作，当短读序列比
 %较长时其比对效果就会下降。
