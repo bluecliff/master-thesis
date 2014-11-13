@@ -54,6 +54,8 @@
 %\renewcommand{\labelitemi}{\LARGE$\textbullet$}
 %\fi
 
+%\RequirePackage{tocloft}
+
 % set equation numer as (1-5)
 \renewcommand{\theequation}{\thechapter-\arabic{equation}}
 
@@ -258,7 +260,10 @@
             %\XDBA@label@classification\XDBAdashuline[4.45cm]{\XDBA@value@classification}
             %\vskip \stretch{15}\bf\heiti\zihao{4}
             \vglue 14cm
-            \bf\songti\zihao{2}\XDBA@value@title
+            \begin{center}
+            \bf\songti\zihao{2}\XDBA@value@title\\
+            \XDBA@value@resttitle
+            \end{center}
             \vskip \stretch{3}
             %\noindent\makebox[3.08cm][s]{\XDBA@label@title}\songti\XDBAdashuline[11.88cm]{\XDBA@value@title}
             %\vskip \stretch{0.3}
@@ -270,7 +275,7 @@
             %\vskip \stretch{0.3}
             \noindent\makebox[2.5cm][l]{\bf\heiti\zihao{4} \XDBA@label@author}
             \songti\zihao{4}\XDBAdashuline[4.5cm]{\XDBA@value@author}
-            \makebox[3.7cm][l]{\heiti\zihao{4} \XDBA@label@advisor}
+            \makebox[3.7cm][l]{\bf\heiti\zihao{4} \XDBA@label@advisor}
             \songti\zihao{4}\XDBAdashuline[3.3cm]{\XDBA@value@advisor~}
             \vskip \stretch{0.3}
             \noindent\makebox[2.5cm][l]{\bf\heiti\zihao{4} \XDBA@label@majorclass}
@@ -322,6 +327,7 @@
             \textbf{
                 \makebox[1.5cm][s]{\XDBA@label@identifier}\XDBAdashuline[2.45cm]{\XDBA@value@identifier}\hspace*{4cm}
                 \makebox[1.5cm][s]{\XDBA@label@schoolnumber}\XDBAdashuline[2.45cm]{\XDBA@value@schoolnumber}\\
+                \vspace{0.5ex}
                 \makebox[1.5cm][s]{\XDBA@label@classnumber}\XDBAdashuline[2.45cm]{\XDBA@value@classnumber}\hspace*{4cm}
                 \makebox[1.5cm][s]{\XDBA@label@classification}\XDBAdashuline[2.45cm]{\XDBA@value@classification}
             }
@@ -333,6 +339,7 @@
                 \songti\zihao{2}硕士学位论文\\
                 \vglue 3cm
                 \songti\zihao{2}\XDBA@value@title\\
+                \songti\zihao{2}\XDBA@value@resttitle\\
             }
             \end{center}
             \vglue 3cm
@@ -348,15 +355,16 @@
                 \textbf{\XDBA@label@date:}\quad \XDBA@value@date\\
                 \end{spacing}
                 }
-            \makebox[1cm]{}
+%            \makebox[1cm]{}
             \setlength{\baselineskip}{20pt}
         }
     \fi
+    \pagestyle{empty}
     \clearpage
 }
 %英文题名
 \newcommand\makeenthemename{
-    \cleardoublepage
+    %\cleardoublepage
     \thispagestyle{empty}
     \ifXDBA@master
         \setlength{\baselineskip}{24pt}
@@ -389,6 +397,11 @@
         }
     \fi
     \clearpage
+    \if@twoside
+        \thispagestyle{empty}
+        \cleardoublepage
+    \fi
+
 }
 
 
@@ -450,12 +463,19 @@
 }
 
 \newcommand\keywords[1]{%
-    \vspace{2ex}\noindent{\heiti\zihao{-4} \XDBA@label@keywords} \heiti\zihao{-4}#1
+    \vspace{2ex}\noindent{\bf\songti\zihao{5} \XDBA@label@keywords} \songti\zihao{5}#1
 }
 
 \newcommand\englishkeywords[1]{%
-    \vspace{2ex}\noindent{\bf\zihao{-4} \XDBA@label@englishkeywords} \bf\zihao{-4}#1
+    \vspace{2ex}\noindent{\bf\zihao{5} \XDBA@label@englishkeywords} \zihao{5}#1
 }
+
+\newcommand\papertype[1]{
+    \noindent{\bf\songti\zihao{5}论文类型:~} \songti\zihao{5}#1
+    }
+\newcommand\papertypeenglish[1]{
+    \noindent{\bf\zihao{5}Type of Dissertation:~} \zihao{5}#1
+    }
 
 \newenvironment{englishabstract}{
     \NCSchapter{\bf\zihao{3} \XDBA@label@englishabstract}{\XDBA@label@englishabstract}
@@ -463,24 +483,13 @@
     \pagestyle{front}\thispagestyle{front}\cleardoublepage
 }
 
-\newenvironment{figureindex}{
-    \NCSchapter{\heiti\zihao{3} 插图索引}{插图索引}
-}{
-    \pagestyle{front}\thispagestyle{front}\clearpage
-}
-
-\newenvironment{tableindex}{
-    \NCSchapter{\heiti\zihao{3} 表格索引}{表格索引}
-}{
-    \pagestyle{front}\thispagestyle{front}\cleardoublepage
-}
 \newenvironment{symbolstable}{
-    \NCSchapter{\heiti\zihao{3} 符号对照表}{符号对照表}
+    \NCSchapter{\heiti\zihao{3} 符号对照表}{符号与缩略语对照表}
 }{
     \pagestyle{front}\thispagestyle{front}\clearpage
 }
 \newenvironment{abbreviation}{
-    \NCSchapter{\heiti\zihao{3} 缩略语对照表}{缩略语对照表}
+    \NCSchapter{\heiti\zihao{3} 缩略语对照表}{符号与缩略语对照表}
 }{
     \pagestyle{front}\thispagestyle{front}\cleardoublepage
 }
@@ -499,8 +508,32 @@
     \@starttoc{toc}%
     \if@restonecol\twocolumn\fi
 }
-
 \addtocontents{toc}{\let\string\XDBA@spaceChar\relax}
+
+%\newlength{\mylen}
+%\renewcommand{\cftfigpresnum}{\figurename\enspace}
+%\renewcommand{\cftfigaftersnum}{:}
+%\settowidth{\mylen}{\cftfigpresnum\cftfigaftersnum}
+%\addtolength{\cftfignumwidth}{\mylen}
+\renewcommand\listoffigures{
+    \pagestyle{tableOfContent}
+    \NCchapter{\listfigurename}{\listfigurename}
+    \@mkboth{\MakeUppercase\listfigurename}{\MakeUppercase\listfigurename}%
+    \thispagestyle{plain}
+    \@starttoc{lof}
+    \if@restonecol\twocolumn\fi
+    }
+
+\renewcommand\listoftables{
+    \pagestyle{tableOfContent}
+    \NCchapter{\listtablename}{\listtablename}
+    \@mkboth{\MakeUppercase\listtablename}{\MakeUppercase\listtablename}%
+    \thispagestyle{plain}
+    \@starttoc{lot}
+    \if@restonecol\twocolumn\fi
+    }
+
+
 \newcommand\NCSchapter[2]{%
     \renewcommand{\chapter}{\if@openright\clearpage\else\clearpage\fi
     \global\@topnum\z@ \@afterindentfalse \secdef\@chapter\@schapter}
