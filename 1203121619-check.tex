@@ -1,0 +1,72 @@
+%% Bachelor Thesis Template of Xidian Uniersity
+%%   for using XDBAthesis package with LaTeX
+%%
+%% Created by Xue-Jilong(xuejilong@gmail.com)
+%%
+%% template.tex v0.1, 2011/03/21
+
+
+\documentclass[xetex,adobefonts,master]{XDBAthesis}
+% 选项说明：
+% dvipdfm  使用 dvipdfm(x) 生成最终的 PDF 文档 (缺省设置）
+% dvips    使用 dvips 生成最终的 PS 文档
+% pdftex   使用 pdfLaTeX 生成最终的 PDF 文档
+% xetex    使用 XeLaTeX 生成 PD F文档
+% adobefonts 使用 Adobe 中文字体
+% winfonts 使用 Windows 中文字体
+% master   用于生成硕士学位论文
+
+% 图形文件的搜索路径
+\graphicspath{{chapter-utf8/}{figures/}}
+
+\begin{document}
+%%----------------- 封面部分 ----------------- %%
+    \schoolnumber{}
+    \title{基于压缩后缀数组的空间高效}{短读比对算法}   %%题目超过14个字把剩下的放到第二个空
+    \entitle{Space-efficient Short Read Alignment with}{ Compressed Suffix Array}   %%题目超过14个字把剩下的放到第二个空
+    \major{计算机软件与理论}
+    \author{}
+    \advisor{}
+    \date{2014年11月}
+    \majorclass{计算机科学与技术}
+    \degreeclass{工科}
+
+    \identifier{10701} %%学校代码
+    \classnumber{TP301.6} %%分类好
+    \classification{公开}
+    \maketitle
+    \makethemename
+    \makeenthemename
+%%----------------- 前言部分 ----------------- %%
+    \frontmatter
+    \pagestyle{empty}
+    \include{chapter-utf8/state}
+    \include{chapter-utf8/abstract}
+    \listoffigures
+    \listoftables
+    \include{chapter-utf8/symbolstable}
+    \tableofcontents
+
+%%----------------- 正文部分 ----------------- %%
+    \mainmatter
+    \pagestyle{content}
+    \include{chapter-utf8/chap-intro}
+    \include{chapter-utf8/chap-predefine}
+    \include{chapter-utf8/chap-csa}
+    \include{chapter-utf8/chap-alignment}
+    \include{chapter-utf8/chap-csaa}
+    \include{chapter-utf8/chap-faq}
+%    \appendix
+%    \include{chapter-utf8/chap-req}
+
+%%----------------- 附件部分 ----------------- %%
+    \backmatter
+    %\include{chapter-utf8/bib1}
+    \bibliography{reference}
+    %\include{chapter-utf8/thanks}
+    %\include{chapter-utf8/authorintro}
+
+\end{document}
+
+
+
