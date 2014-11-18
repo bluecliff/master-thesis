@@ -342,11 +342,12 @@ accuracy上和BWA，Bowtie基本持平。%出现这样的结果是因为BWA和CS
 \end{table}
 
 \subsection{真实数据测试}
-为测试CSAA在真实数据上的表现，本文从网络上下载了12.2 million个长为51bp的短读数据库。这些数据来自European Read Archive(AC:ERR000589)
-，是1000 Genomes Project的一个名男性基因组测序，由Illumina测序技术完成测序。参考序列选的是人类基因组，测序编号hg19。由于真实
-数据的比对位置并不能事先获取，所以在测试真实数据时使用Mapped rate来度量比对效果。Mapped rate指比对程序在指定参数条件下能够
-给出比对结果的短读数目和所有测试数据中短读数目总和的比例。在本次比对中测试中，BWA，CSAA，Bowtie都是单线程比对，BWA和CSAA使用
-默认的长为32的seed策略，Bowtie使用长为31的seed策略。
+为测试CSAA在真实数据上的表现，本文从网络上下载了12.2 million个长为51bp的短读数据库。这些数据来自European Read Archive
+(AC:ERR000589)，是1000 Genomes Project的一个名男性基因组测序，由Illumina测序技术完成测序。参考序列选的是人类基因组，
+测序编号hg19。由于真实数据的比对位置并不能事先获取，所以在测试真实数据时使用Mapped rate来度量比对效果。Mapped rate
+指比对程序在指定参数条件下能够给出比对结果的短读数目和所有测试数据中短读数目总和的比例。在本次比对中测试中，BWA，CSAA，
+Bowtie和MAQ都是单线程比对，BWA和CSAA使用默认的长为32的seed策略，Bowtie使用长为31的seed策略，Maq使用-n 2参数，指定最大
+允许的mismatch数目为2。
 
 \begin{table}[htbp]
     \caption{实际数据比对测试}
@@ -359,12 +360,15 @@ accuracy上和BWA，Bowtie基本持平。%出现这样的结果是因为BWA和CS
        Bowtie&53&3122&84.6\\
        BWA&62&3887&88.4\\
        CSAA&87&3413&84.5\\
+       MAQ&647&4824&86.4\\
        \bottomrule
     \end{tabular}
 \end{table}
 
 表\ref{tab:tab3}中的测试结果显示，在实际数据中CSAA也具有较高的准确性，84\%的短读序列都能映射到参考序列上，
-基本性能和BWA很接近，相对而言，CSAA使用了更少的内存。
+基本性能和BWA很接近。在时间方面，CSAA，BWA，Bowtie都使用索引参考序列再比对的方法，而MAQ则使用了索引短读序列的方法，所以
+CSAA，BWA，Bowtie的比对时间都比较接近，Bowtie能更快一些。在比对使用的空间上，相对而言，CSAA使用了更少的内存，空间效率
+优于其他三种发放，在常规PC机上具有优势。
 
 \section{本章小节}
 
