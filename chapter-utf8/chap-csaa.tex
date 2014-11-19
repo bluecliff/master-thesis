@@ -127,7 +127,7 @@ csaa在执行比对时，可以指定线程的数量，程序启动后，将建�
         \Function{Match-MULT}{$k,\Phi,\alpha,\beta,maxPenalty,maxHeapSize$}
         \State 分割reads文件为$k$个小文件$\{read_1,read_2 \ldots read_k \}$
         \State 建立$k$个线程$threads=\{thread_1,thread_2\ldots thread_k\}$
-        \ForAll{$thread_i \in thrads$ }
+        \ForAll{$thread_i \in threads$ }
             \State 从文件$read_i$读取一个短读$read$
             \State \Comment{调用算法\ref{alg:alignment}}
             \State $result \gets $\Call{CSAAlignment}{$\Phi,\alpha,\beta,read,maxPenalty,maxHeapSize$} 
