@@ -384,8 +384,7 @@
                 A thesis submitted to\\
                 XIDIAN UNIVERSITY\\
                 in partial fulfillment of the requirements\\
-                for the degree of Master\\
-                in Computer Science and Technology\\
+                of Master graduation\\
 
                 \vglue 8cm
 
@@ -408,10 +407,7 @@
 
 }
 
-\renewcommand\headrule{
-\begin{minipage}{1\textwidth}
-\hrule width \hsize \kern 0.2mm \hrule width \hsize %height 1pt
-\end{minipage}}%
+
 
 \fancypagestyle{plain}{%
     \fancyhf{}%
