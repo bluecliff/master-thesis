@@ -391,7 +391,7 @@
 
                 By\\
                 Li Shuangjiang\\
-                (Computer Softwear and Theroy)\\
+                (Computer Software and Theory)\\
                 Supervisor: Prof. Hongwei Huo\\
                 November 2014\\
             }
