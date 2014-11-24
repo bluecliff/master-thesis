@@ -131,20 +131,16 @@
 
 \RequirePackage{times} % set english fonts to Times New Roman
 
-%% set margin with left:3cm,right:2cm,up:3cm,down:2.5cm
-%\oddsidemargin 1.46 true cm
-\oddsidemargin 0.06 true cm
-\evensidemargin 0.06 true cm
-\topmargin -0.50 true cm
+% set margin with left:3cm,right:2cm,up:3cm,down:2cm
+\oddsidemargin 1.46 true cm
+\evensidemargin -0.54 true cm
+\topmargin -0.54 true cm
 \headheight 12.9pt
 \headsep 17.3527pt
 \textheight 24.2 true cm
-%\textwidth 15 true cm
-\textwidth 15.8 true cm
-%\footskip 0.6 cm
-\footskip 1.0 cm
+\textwidth 15 true cm
+\footskip 0.5 cm
 \parskip 0.5ex plus 0.25ex minus 0.25ex
-
 
 %\makeatletter
 %\def\tagform@#1{\maketag@@@{\ignorespaces[#1]\unskip\@@italiccorr}}
@@ -391,7 +387,6 @@
 
                 By\\
                 Li Shuangjiang\\
-                (Computer Software and Theory)\\
                 Supervisor: Prof. Hongwei Huo\\
                 November 2014\\
             }
