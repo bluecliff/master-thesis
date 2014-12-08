@@ -257,7 +257,7 @@ read2相匹配的。按照前文所述的双端测序方法可知，read1和read
 具的性能，以和CSAA进行比较。分别对比这几个工具在不同规模数据上建立索引时的时间，需要的内存；以及在模拟数据上和真实数据上的比对能力。
 这三个工具中，Bowtie和BWA是用基于BWT的索引建立
 的比对工具，其中Bowtie采用了回溯法实现替换操作，但不支持insert和delete操作，即上文中所论述的gap alignment。BWA除了支持insert，
-delete之外，还加入了smith-water方法提高比对精度。此外Bowtie和BWA和我们的CSAA都支持多线程比对，但在比对测试中，我们的csaa和bwa,
+delete之外，还加入了Smith-Waterman方法提高比对精度。此外Bowtie和BWA和我们的CSAA都支持多线程比对，但在比对测试中，我们的csaa和bwa,
 bowtie等都只使用单线程运行。
 
 \subsection{测试环境和数据}

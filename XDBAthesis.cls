@@ -284,8 +284,8 @@
             \vskip \stretch{0.3}
             %\noindent\makebox[3.08cm][l]{\heiti\zihao{4} \XDBA@label@date}
             %\kaishu\zihao{4}\XDBAdashuline[11.68cm]{\XDBA@value@date~}
-            \noindent\makebox[2.5cm][l]{\bf\heiti\zihao{4} \XDBA@label@degreeclass}
-            \songti\zihao{4}\XDBAdashuline[4.5cm]{\XDBA@value@degreeclass}
+            \noindent\makebox[3.5cm][l]{\bf\heiti\zihao{4} \XDBA@label@degreeclass}
+            \songti\zihao{4}\XDBAdashuline[3.5cm]{\XDBA@value@degreeclass 硕士}
             \makebox[4.2cm][l]{\bf\heiti\zihao{4}\XDBA@label@date}
             \songti\zihao{4}\XDBAdashuline[2.8cm]{\XDBA@value@date~}
             \vskip \stretch{0.3}
@@ -349,7 +349,7 @@
                 \textbf{\XDBA@label@author:}\quad \XDBA@value@author\\
                 \textbf{\XDBA@label@majorclass:}\quad \XDBA@value@majorclass\\
                 \textbf{\XDBA@label@major:}\quad \XDBA@value@major\\
-                \textbf{\XDBA@label@degreeclass:}\quad \XDBA@value@degreeclass\\
+                \textbf{学位类别:}\quad \XDBA@value@degreeclass 硕士\\
                 \textbf{\XDBA@label@advisor:}\quad\XDBA@value@advisor\\
                 \textbf{\XDBA@label@date:}\quad \XDBA@value@date\\
                 \end{spacing}
@@ -386,7 +386,7 @@
                 \vglue 8cm
 
                 By\\
-                Li Shuangjiang\\
+                Shuangjiang Li\\
                 Supervisor: Prof. Hongwei Huo\\
                 November 2014\\
             }
