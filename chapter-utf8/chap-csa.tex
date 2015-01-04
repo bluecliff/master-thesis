@@ -360,7 +360,7 @@ $SA[\alpha(P[0])]+1,SA[\alpha(P[0])+1]+1,\cdots ,SA[\alpha(P[0])+\beta(P[0])-1]+
 具体的算法描述如算法\ref{alg:forwardsearch}。
 
 \begin{algorithm}
-    \caption{前向搜索模式匹配}
+    \caption{前向搜索}
     \label{alg:forwardsearch}
     \begin{algorithmic}[1]
         \Require $P,\Phi,\alpha,\beta$
@@ -372,13 +372,25 @@ $SA[\alpha(P[0])]+1,SA[\alpha(P[0])+1]+1,\cdots ,SA[\alpha(P[0])+\beta(P[0])-1]+
         \For {$i \gets 1$ to $m-1$}
             \State $(l_{tmp},r_{tmp}) \gets (\alpha(P[i]),\alpha(P[i])+\beta(P[i])-1)$
             \For {$j \gets l$ to $r$}
-            \If{$\Phi[j] \in (l_{tmp},r_{tmp})$}
+		\State $t \gets 1$
+		\State $q \gets 0 $
+	　　	\While{$t \leq i$}
+		     \State $q \gets \Phi[t]$
+		     \State $t \gets t+1$
+		\EndWhile
+            \If{$q \in (l_{tmp},r_{tmp})$}
                 \State $l\gets j$
                 \State break
             \EndIf
             \EndFor
             \For {$j \gets r$ down to $l$}
-            \If{$\Phi[j] \in (l_{tmp},r_{tmp})$}
+		\State $t \gets 1$
+		\State $q \gets 0 $
+		\While{$t \leq i$}
+		     \State $q \gets \Phi[t]$
+		     \State $t \gets t+1$
+		\EndWhile
+            \If{$q \in (l_{tmp},r_{tmp})$}
                 \State $r\gets j$
                 \State break
             \EndIf
@@ -395,7 +407,7 @@ $SA[\alpha(P[0])]+1,SA[\alpha(P[0])+1]+1,\cdots ,SA[\alpha(P[0])+\beta(P[0])-1]+
 算法\ref{alg:forwardsearch}的搜索过程和基于后缀数组的模式匹配算法是等价的。只是这里利用了$\Phi$数组的特性，总的时间复杂度
 依然是$O(m\log n)$。
 
-\subsection{CSA后向搜索模式匹配}
+\subsection{CSA后向搜索模式匹配算法}
 压缩后缀数组上的后向搜索模式匹配算法是由Sadakan最早提出来的\cite{sadakane2002succinct}。如上文中所述，我们用$(l,r)$
 表示一个模式串在$T$上的后缀位置，模式匹配的目的正是要找到$P$的$(l,r)$。首先，计算$P[m]$的后缀位置，很明显$(\alpha(P[m]),
 \alpha(P[m])+\beta(P[m])-1)$就是。假设一般情况，我们已经知道$P[i+1\ldots m-1]$的后缀数组位置为$(l_{P_{i+1}},r_{P_{i+1}})$，

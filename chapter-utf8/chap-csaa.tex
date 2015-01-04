@@ -140,9 +140,9 @@ csaa在执行比对时，可以指定线程的数量，程序启动后，将建�
 \end{algorithm}
 
 通过增加比对时的线程数量可以快速减少比对的时间，如图\ref{fig:alignment}所示。实验中所用的参考序列为来自NCBI的人类基因组
-hg19.fa，短读序列是用wgsim仿真程序生成的模拟短读数据，短读长分别为35bp,70bp,125bp，0.09\%的SNP出现几率，0.01\%的indel出现几率，
-短读数量为100万个。可以看到，当由单线程变为双线程时，比对时间减少了一倍，这显示CSAA的多线程能明显提高比对的速度。之后再提高
-线程数不能再提高比对速度是因为测试机器是双核的，再多的线程已经不能有效提高CSAA的比对速度。对应的，当进程数增多时，比对所需要
+hg19.fa，短读序列是用wgsim仿真程序生成的仿真短读数据，短读长分别为35bp,70bp,125bp，0.09\%的SNP出现几率，0.01\%的indel出现几率，
+短读数量为100万个。可以看到，起初增加线程数时，比对时间减少了一倍，这显示CSAA的多线程能明显提高比对的速度。之后再提高
+线程数不能再提高比对速度，再多的线程已经不能有效提高CSAA的比对速度。对应的，当线程数增多时，比对所需要
 的内存也随之增多。图\ref{fig:alignment}中的曲线还显示，比对的速度以及内存消耗和短读长是密切相关的，短读越长，比对的时间也
 越长，所需内存也越多。
 
@@ -242,9 +242,9 @@ read2相匹配的。按照前文所述的双端测序方法可知，read1和read
         \cline{6-8}
         &Time(m) &Rec(\%) &Acc(\%)& &Time(m) &Rec(\%) &Acc(\%)\\
         \midrule
-        35 &6.7 &80 &98.1& &10.2 &88.4 &98.2 \\
-        70 &14.32 &84 &98.1& &16.85 &92.2 &98.2 \\
-        125 &34.25 &87 &98.3& &36.87 &94.1 &98.4 \\
+        35 &30m51s &80.1 &99.74& &32m21s &83.35 &99.93 \\
+        70 &1h16m20s&84.44 &99.91& &1h17m55s &88.57 &99.97 \\
+        125 &3h26m18s &86.83 &99.97& &3h28m21s &90.96 &99.99\\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -262,13 +262,12 @@ bowtie等都只使用单线程运行。
 
 \subsection{测试环境和数据}
 
-在对CSAA的对比测试中，我们使用gcc 4.8编译链接CSAA，并且使用了-O3优化。系统环境为ubuntu 12.04 amd64，运行在一台具有18G内存和双
-核intel Xeon(R) CPU的工
-作站上。测试使用的数据是标准的人类基因组序列，ucsc version为hg19，来自1000 Genome Project的名为Genome Reference Consortium GRCh37
+在对CSAA的对比测试中，我们使用gcc 4.8编译链接CSAA，并且使用了-O3优化。系统环境为64位redhat 5.0，测试机器有64GB内存和24
+核CPU。测试使用的数据是标准的人类基因组序列，ucsc version为hg19，来自1000 Genome Project的名为Genome Reference Consortium GRCh37
 的参考序列。实验中所用的模拟数据也是在该数据上生成。
 
-测试中，CSAA和BWA在测试时均指定单线程，seed长为32。Bowtie使用的是Bowtie-v1，使用单线程，且不使用-best参数，即Bowtie使用DFS搜索。
-Bowtie使用默认的长为31的seed。模拟数据的获取和比对精度结果获得中使用了SAMtools系列工具中的wgsim和wgsim-eval。
+测试中，CSAA和BWA在测试时均指定单线程，seed长为32。Bowtie使用的是Bowtie-v1，使用单线程，使用--best -k 2参数。
+Bowtie使用长为32的seed。模拟数据的获取和比对精度结果获得中使用了SAMtools系列工具中的wgsim和wgsim-eval。
 
 \subsection{索引建立时间}
 表\ref{tab:tab1}中对比了bowtie,BWA和CSAA三种工具分别建立索引时所需要的时间和内存消耗对比情况，表中数据分别对应几个工具在索引
@@ -287,13 +286,13 @@ Bowtie使用默认的长为31的seed。模拟数据的获取和比对精度结�
         \hline
         Bowtie&21.85 &45.33 &93.02& &987 &1109 &1210 \\
         BWA&7.85 &16.33 &34.72& &1890 &1902 &2006 \\
-        CSAA&6.27 &14.0 &29.87& &2113 &8680.1 &19532.5 \\
+        CSAA&6.27 &14.0 &29.87& &2113 &8680 &19532 \\
         \hline
     \end{tabular}
 \end{table}
 
-从表\ref{tab:tab1}中的测试结果可以看到，CSAA相对其他两个不对工具在索引时间上具有较大优势，这是由于BWA和Bowtie都同时给inverted
-reference建立了索引，用时会较长。其中Bowtie建立索引时是分块建立索引的，最终再合并成一个索引，时间效率最差，但需用内存空间最小。
+从表\ref{tab:tab1}中的测试结果可以看到，CSAA相对其他两个比对工具在索引时间上具有较大优势。其中Bowtie建立索引时是分块建立索引
+的，最终再合并成一个索引，时间效率最差，但需用内存空间最小。
 
 \subsection{模拟数据测试}
 本文使用SAMtools工具包中的wgsim工具从人类基因组序列hg19中随机生成模拟的短读序列。然后，分别用四种比对工具对这些模拟的
@@ -303,12 +302,11 @@ reference建立了索引，用时会较长。其中Bowtie建立索引时是分�
 表\ref{tab:singleend}和\ref{tab:pairend}所示为四个测试工具在单端和双端模拟数据上的的比对结果展示，参考序列是人类基因组序列
 hg19，模拟短读序列的长度为70bp，总共有100万个短读。
 
-表\ref{tab:singleend}和\ref{tab:pairend}中的实验的模拟数据使用wgsim程序在人类基因组上生成的长为70bp，生成过程中，单核苷酸变
-异(SNP)的概率是0.09\%，indel变异的概率是0.01\%，生成双端模拟数据时的fragment distance的长度满足正太分布$N(500,50)$。对比结果中Rec是recall rate，Acc是accuracy。
-意义如上文中所解释。从表中可以看出，在长为70bp的100万个短读的映射中，CSAA相对于BWA和Bowtie在查询时更节省内存，在recall rate和
-accuracy上和BWA，Bowtie基本持平。%出现这样的结果是因为BWA和CSAA都支持indel操作，而Bowtie则只支持substitution操作，当短读序列比
+表\ref{tab:singleend}和\ref{tab:pairend}中的实验的模拟数据使用wgsim程序在人类基因组上生成的短读长为70的模拟数据，生成过程中，单核苷酸变
+异(SNP)的概率是0.09\%，indel变异的概率是0.01\%，生成双端模拟数据时的fragment distance的长度满足正太分布$N(500,50)$。对比结果
+中Rec是recall rate，Acc是accuracy。意义如上文中所解释。从表中可以看出，CSAA相对于BWA和Bowtie在查询时更节省内存，在recall rate
+和accuracy上和BWA，Bowtie基本持平。%出现这样的结果是因为BWA和CSAA都支持indel操作，而Bowtie则只支持substitution操作，当短读序列比
 %较长时其比对效果就会下降。
-
 
 \begin{table}[htbp]
     \caption{单端模拟数据比对测试}
@@ -316,11 +314,11 @@ accuracy上和BWA，Bowtie基本持平。%出现这样的结果是因为BWA和CS
     \centering
     \begin{tabular}{lrrrr}
        \toprule \\
-       Program&Time(m)&Memory(M)&Rec(\%)&Acc(\%)\\
+       Program&Time&Memory(M)&Rec(\%)&Acc(\%)\\
        \midrule \\
-       Bowtie&10.2&2911&85.3&99.8\\
-       BWA&12.1&3116&90.7&99.8\\
-       CSAA&14.32&2905&84&98.1\\
+       Bowtie&24m38s&2923&80.21&98.64\\
+       BWA&39m57s&3506&89.32&99.91\\
+       CSAA&1h16m20s&3384&84.44&99.91\\
        \bottomrule
     \end{tabular}
 \end{table}
@@ -332,11 +330,11 @@ accuracy上和BWA，Bowtie基本持平。%出现这样的结果是因为BWA和CS
     \centering
     \begin{tabular}{lrrrr}
        \toprule \\
-       Program&Time(m)&Memory(M)&Rec(\%)&Acc(\%)\\
+       Program&Time&Memory(M)&Rec(\%)&Acc(\%)\\
        \midrule \\
-       Bowtie&10.05&3011&89.6&99.2\\
-       BWA&13.7&3117&94.3&99.8\\
-       CSAA&16.85&2905&92.2&98.2\\
+       Bowtie&26m29s&2931&83.47&98.67\\
+       BWA&43m25s&4954&94.71&99.97\\
+       CSAA&1h17m55s&4023&88.57&99.97\\
        \bottomrule
     \end{tabular}
 \end{table}
@@ -345,22 +343,20 @@ accuracy上和BWA，Bowtie基本持平。%出现这样的结果是因为BWA和CS
 为测试CSAA在真实数据上的表现，本文从网络上下载了12.2 million个长为51bp的短读数据库。这些数据来自European Read Archive
 (AC:ERR000589)，是1000 Genomes Project的一个名男性基因组测序，由Illumina测序技术完成测序。参考序列选的是人类基因组，
 测序编号hg19。由于真实数据的比对位置并不能事先获取，所以在测试真实数据时使用Mapped rate来度量比对效果。Mapped rate
-指比对程序在指定参数条件下能够给出比对结果的短读数目和所有测试数据中短读数目总和的比例。在本次比对中测试中，BWA，CSAA，
-Bowtie和MAQ都是单线程比对，BWA和CSAA使用默认的长为32的seed策略，Bowtie使用长为31的seed策略，Maq使用-n 2参数，指定最大
-允许的mismatch数目为2。
+指比对程序在指定参数条件下能够给出比对结果的短读数目和所有测试数据中短读数目总和的比例。在本次比对中测试中，Bowtie,BWA和
+CSAA使用默认的长为32的seed策略，Bowtie使用--best -k 2参数。
 
 \begin{table}[htbp]
     \caption{实际数据比对测试}
     \label{tab:tab3}
     \centering
-    \begin{tabular}{lrrr}
+    \begin{tabular}{lrrrr}
        \toprule
-       Program&Time(m)&Memory(MB)&Mapped(\%)\\
+       Program&Time&Memory(MB)&Mapped(\%)&Paired(\%)\\
        \midrule
-       Bowtie&53&3122&84.6\\
-       BWA&62&3887&88.4\\
-       CSAA&87&3413&84.5\\
-       MAQ&647&4824&86.4\\
+       Bowtie&3h48m47s&2929&75.2&83.75\\
+       BWA&3h4m24s&4845&87.67&99.83\\
+       CSAA&6h49m17s&4008&83.18&99.75\\
        \bottomrule
     \end{tabular}
 \end{table}
@@ -368,7 +364,7 @@ Bowtie和MAQ都是单线程比对，BWA和CSAA使用默认的长为32的seed策�
 表\ref{tab:tab3}中的测试结果显示，在实际数据中CSAA也具有较高的准确性，84\%的短读序列都能映射到参考序列上，
 基本性能和BWA很接近。在时间方面，CSAA，BWA，Bowtie都使用索引参考序列再比对的方法，而MAQ则使用了索引短读序列的方法，所以
 CSAA，BWA，Bowtie的比对时间都比较接近，Bowtie能更快一些。在比对使用的空间上，相对而言，CSAA使用了更少的内存，空间效率
-优于其他三种发放，在常规PC机上具有优势。
+优于BWA方法，在常规PC机上具有优势。
 
 \section{本章小节}
 
